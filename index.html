@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SPARKLING — Daily Rankings</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #0A0F1E;
+      --ice: #F0F4FF;
+      --silver: #C8D8E8;
+      --gold: #E8C547;
+      --muted: rgba(200,216,232,0.45);
+      --sans: 'DM Sans', sans-serif;
+      --display: 'Bebas Neue', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--ice);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 20px 40px;
+      background: linear-gradient(to bottom, rgba(10,15,30,0.9) 0%, transparent 100%);
+      backdrop-filter: blur(0px);
+    }
+    .nav-logo {
+      font-family: var(--display);
+      font-size: 22px;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+    }
+    .nav-date {
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--silver);
+    }
+    .nav-count {
+      font-size: 12px;
+      font-weight: 300;
+      letter-spacing: 0.1em;
+      color: var(--silver);
+    }
+
+    /* ── HERO ── */
+    .hero {
+      height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 60%, rgba(232,197,71,0.08) 0%, transparent 70%),
+                  radial-gradient(ellipse at 20% 80%, rgba(100,160,220,0.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(60,100,180,0.1) 0%, transparent 50%);
+    }
+    .bubbles {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    .bubble {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(200,216,232,0.06);
+      border: 1px solid rgba(200,216,232,0.12);
+      animation: rise linear infinite;
+    }
+    @keyframes rise {
+      0%   { transform: translateY(110vh) scale(0.8); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-20vh) scale(1.1); opacity: 0; }
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 24px;
+      font-weight: 400;
+      position: relative;
+    }
+    .hero-title {
+      font-family: var(--display);
+      font-size: clamp(72px, 14vw, 180px);
+      line-height: 0.88;
+      letter-spacing: 0.03em;
+      color: var(--ice);
+      position: relative;
+    }
+    .hero-title span { color: var(--gold); }
+    .hero-sub {
+      margin-top: 32px;
+      font-size: 15px;
+      font-weight: 300;
+      color: var(--silver);
+      letter-spacing: 0.06em;
+      position: relative;
+    }
+    .scroll-cue {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--silver); opacity: 0.6;
+      animation: bob 2.5s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+    .scroll-cue svg { opacity: 0.5; }
+
+    /* ── WATER CARD ── */
+    .water-card {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      position: relative;
+      overflow: hidden;
+      border-top: 1px solid rgba(200,216,232,0.08);
+    }
+    .water-card:nth-child(even) .card-visual { order: 2; }
+    .water-card:nth-child(even) .card-info   { order: 1; }
+
+    /* rank giant bg number */
+    .card-rank-bg {
+      position: absolute;
+      font-family: var(--display);
+      font-size: clamp(260px, 40vw, 520px);
+      line-height: 1;
+      letter-spacing: -0.04em;
+      color: rgba(200,216,232,0.04);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      user-select: none;
+      white-space: nowrap;
+      z-index: 0;
+    }
+
+    .card-visual {
+      position: relative;
+      display: flex; align-items: center; justify-content: center;
+      padding: 80px 60px;
+      z-index: 1;
+    }
+    .card-visual-inner {
+      position: relative; text-align: center;
+    }
+    .card-rank-number {
+      font-family: var(--display);
+      font-size: clamp(90px, 14vw, 180px);
+      line-height: 1;
+      color: var(--gold);
+      letter-spacing: -0.02em;
+      display: block;
+      margin-bottom: -20px;
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .card-img {
+      width: clamp(140px, 18vw, 260px);
+      height: auto;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5)) drop-shadow(0 0 40px rgba(100,160,220,0.15));
+      opacity: 0; transform: translateY(40px) scale(0.95);
+      transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
+    }
+    .card-img-placeholder {
+      width: clamp(140px, 18vw, 260px);
+      height: clamp(280px, 40vw, 520px);
+      border-radius: 120px;
+      background: linear-gradient(160deg, rgba(200,216,232,0.15) 0%, rgba(100,140,200,0.08) 100%);
+      border: 1px solid rgba(200,216,232,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 48px;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.4));
+      opacity: 0; transform: translateY(40px) scale(0.95);
+      transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card-img-placeholder::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(255,255,255,0.05) 0%, transparent 60%);
+      border-radius: inherit;
+    }
+    .water-card.visible .card-rank-number,
+    .water-card.visible .card-img,
+    .water-card.visible .card-img-placeholder { opacity: 1; transform: translateY(0) scale(1); }
+
+    .card-info {
+      display: flex; flex-direction: column; justify-content: center;
+      padding: 80px 60px;
+      position: relative; z-index: 1;
+    }
+    .card-brand {
+      font-size: 11px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 12px;
+      font-weight: 400;
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
+    }
+    .card-name {
+      font-family: var(--display);
+      font-size: clamp(42px, 6vw, 88px);
+      line-height: 0.92;
+      letter-spacing: 0.02em;
+      color: var(--ice);
+      margin-bottom: 24px;
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+    }
+    .card-verdict {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--silver);
+      max-width: 380px;
+      margin-bottom: 40px;
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
+    }
+    .water-card.visible .card-brand,
+    .water-card.visible .card-name,
+    .water-card.visible .card-verdict,
+    .water-card.visible .card-scores { opacity: 1; transform: translateX(0); }
+
+    .card-scores {
+      display: flex; gap: 32px;
+      opacity: 0; transform: translateX(-20px);
+      transition: opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s;
+    }
+    .score-item { display: flex; flex-direction: column; gap: 4px; }
+    .score-label {
+      font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(200,216,232,0.5); font-weight: 400;
+    }
+    .score-bar-wrap {
+      width: 80px; height: 2px;
+      background: rgba(200,216,232,0.12);
+      border-radius: 2px; overflow: hidden;
+      margin-top: 4px;
+    }
+    .score-bar {
+      height: 100%; border-radius: 2px;
+      background: var(--gold);
+      transform-origin: left;
+      transform: scaleX(0);
+      transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1) 0.7s;
+    }
+    .water-card.visible .score-bar { transform: scaleX(1); }
+    .score-value {
+      font-family: var(--display);
+      font-size: 28px; letter-spacing: 0.01em;
+      color: var(--ice);
+    }
+
+    /* card accent stripe */
+    .card-stripe {
+      position: absolute;
+      top: 0; bottom: 0; left: 0;
+      width: 3px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease 0.6s;
+    }
+    .water-card.visible .card-stripe { opacity: 0.6; }
+
+    /* ── DIVIDER ── */
+    .rank-divider {
+      display: flex; align-items: center;
+      padding: 20px 40px;
+      gap: 20px;
+    }
+    .rank-divider-line { flex: 1; height: 1px; background: rgba(200,216,232,0.08); }
+    .rank-divider-text {
+      font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(200,216,232,0.25);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      padding: 80px 40px 60px;
+      text-align: center;
+      border-top: 1px solid rgba(200,216,232,0.08);
+    }
+    .footer-title {
+      font-family: var(--display);
+      font-size: clamp(36px, 6vw, 72px);
+      color: var(--ice);
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    .footer-sub {
+      font-size: 13px; font-weight: 300;
+      color: var(--silver); letter-spacing: 0.1em;
+      margin-bottom: 40px;
+    }
+    .footer-note {
+      font-size: 11px; color: rgba(200,216,232,0.3);
+      letter-spacing: 0.1em;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 768px) {
+      nav { padding: 16px 20px; }
+      .water-card { grid-template-columns: 1fr; min-height: auto; }
+      .water-card:nth-child(even) .card-visual { order: 1; }
+      .water-card:nth-child(even) .card-info   { order: 2; }
+      .card-visual { padding: 60px 20px 20px; }
+      .card-info   { padding: 20px 20px 60px; }
+      .card-scores { flex-wrap: wrap; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <span class="nav-logo">SPARKLING ✦</span>
+  <span class="nav-date" id="today-date"></span>
+  <span class="nav-count">8 Waters Ranked</span>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="bubbles" id="bubbles"></div>
+  <p class="hero-eyebrow">Updated Daily · Honest Reviews</p>
+  <h1 class="hero-title">THE<br><span>BUBBLE</span><br>BOARD</h1>
+  <p class="hero-sub">One obsessive's daily ranking of sparkling water</p>
+  <div class="scroll-cue">
+    <svg width="14" height="22" viewBox="0 0 14 22" fill="none">
+      <rect x="1" y="1" width="12" height="16" rx="6" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="7" cy="6" r="1.5" fill="currentColor">
+        <animate attributeName="cy" values="6;11;6" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+    Scroll to rank
+  </div>
+</section>
+
+<!-- WATERS — Edit this section daily -->
+<div id="rankings">
+
+  <!-- RANK 1 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Today's Top Pick</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="1">
+    <div class="card-rank-bg">1</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">01</span>
+        <div class="card-img-placeholder">💧</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">San Pellegrino · Italy</span>
+      <h2 class="card-name">S.PELLEGRINO</h2>
+      <p class="card-verdict">The gold standard. Perfectly calibrated bubbles — not aggressive, not flat. A mineral presence that enhances rather than dominates. The bottle is an object of beauty.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">9.4</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:94%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">9.1</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:91%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">9.5</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:95%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 2 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Close Second</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="2">
+    <div class="card-rank-bg">2</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">02</span>
+        <div class="card-img-placeholder">🫧</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">Gerolsteiner · Germany</span>
+      <h2 class="card-name">GEROL-STEINER</h2>
+      <p class="card-verdict">High mineral content gives it a distinctive backbone. The carbonation is assertive without being harsh. A serious water for serious drinkers.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">9.0</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:90%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">8.8</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:88%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">8.7</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:87%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 3 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">The Challenger</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="3">
+    <div class="card-rank-bg">3</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">03</span>
+        <div class="card-img-placeholder">💦</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">Perrier · France</span>
+      <h2 class="card-name">PERRIER</h2>
+      <p class="card-verdict">Iconic for a reason. The aggressive fizz is polarizing but undeniably interesting. Works better with food than solo. The green bottle remains a design classic.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">8.6</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:86%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">8.2</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:82%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">8.0</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:80%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 4 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Everyday Pick</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="4">
+    <div class="card-rank-bg">4</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">04</span>
+        <div class="card-img-placeholder">🌊</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">Topo Chico · Mexico</span>
+      <h2 class="card-name">TOPO CHICO</h2>
+      <p class="card-verdict">A cult favourite with deeply loyal followers. The carbonation has real texture and the mineral taste is clean. The can format is a small step down from glass.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">8.4</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:84%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">7.9</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:79%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">8.1</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:81%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 5 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Solid Middle</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="5">
+    <div class="card-rank-bg">5</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">05</span>
+        <div class="card-img-placeholder">🫗</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">Badoit · France</span>
+      <h2 class="card-name">BADOIT</h2>
+      <p class="card-verdict">Gentle, almost whisper-soft carbonation. More neutral than most, which makes it versatile. A good everyday option but lacks the personality to rank higher.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">7.5</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:75%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">7.8</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:78%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">7.6</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:76%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 6 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Needs Work</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="6">
+    <div class="card-rank-bg">6</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">06</span>
+        <div class="card-img-placeholder">💧</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">LaCroix · USA</span>
+      <h2 class="card-name">LACROIX</h2>
+      <p class="card-verdict">The millennial darling has faded. The flavoured versions are artificial, the plain is thin. Once groundbreaking, now outpaced by better options at the same price point.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">6.8</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:68%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">6.4</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:64%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">6.2</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:62%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 7 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Disappointing</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="7">
+    <div class="card-rank-bg">7</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">07</span>
+        <div class="card-img-placeholder">😶</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">Evian Sparkling · France</span>
+      <h2 class="card-name">EVIAN PÉTILLANTE</h2>
+      <p class="card-verdict">An identity crisis in a bottle. Evian's flat water earns its reputation; this sparkling version feels like an afterthought. Inconsistent fizz, flat after 5 minutes.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">5.9</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:59%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">6.1</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:61%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">5.7</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:57%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+  <!-- RANK 8 -->
+  <div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">Dead Last</span><div class="rank-divider-line"></div></div>
+  <article class="water-card" data-rank="8">
+    <div class="card-rank-bg">8</div>
+    <div class="card-visual">
+      <div class="card-visual-inner">
+        <span class="card-rank-number">08</span>
+        <div class="card-img-placeholder">💀</div>
+      </div>
+    </div>
+    <div class="card-info">
+      <div class="card-stripe"></div>
+      <span class="card-brand">Generic Store Brand</span>
+      <h2 class="card-name">SUPERMARKET FIZZ</h2>
+      <p class="card-verdict">Aggressively mediocre. A reminder that not all water is created equal. The bubbles die on impact. The mineral taste suggests a parking lot. Order something else.</p>
+      <div class="card-scores">
+        <div class="score-item">
+          <span class="score-label">Bubbles</span>
+          <span class="score-value">3.2</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:32%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Taste</span>
+          <span class="score-value">2.8</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:28%"></div></div>
+        </div>
+        <div class="score-item">
+          <span class="score-label">Finish</span>
+          <span class="score-value">2.4</span>
+          <div class="score-bar-wrap"><div class="score-bar" style="--w:24%"></div></div>
+        </div>
+      </div>
+    </div>
+  </article>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-title">THAT'S A WRAP</p>
+  <p class="footer-sub">Back tomorrow with a fresh ranking ✦ Stay fizzy</p>
+  <p class="footer-note">All opinions are my own and entirely subjective. Updated daily.</p>
+</footer>
+
+<script>
+  // Today's date
+  const d = new Date();
+  document.getElementById('today-date').textContent =
+    d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
+
+  // Bubble animation
+  const container = document.getElementById('bubbles');
+  for (let i = 0; i < 22; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = Math.random() * 60 + 8;
+    b.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*-15}s;
+    `;
+    container.appendChild(b);
+  }
+
+  // Score bars use CSS variable for width
+  document.querySelectorAll('.score-bar').forEach(bar => {
+    bar.style.setProperty('width', bar.style.getPropertyValue('--w') || '0%');
+  });
+
+  // Scroll-triggered reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // Don't unobserve — keep visible once seen
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.water-card').forEach(card => observer.observe(card));
+</script>
+</body>
+</html>
