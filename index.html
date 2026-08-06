@@ -830,12 +830,12 @@
   <header class="hero" id="top">
     <div class="bubbles" id="heroBubbles" aria-hidden="true"></div>
     <div class="hero-inner">
-      <p class="eyebrow">Updated regularly - rated honestly</p>
+      <p class="eyebrow">Updated daily - rated honestly</p>
       <h1 class="hero-title">The <span>Bubble</span> Board</h1>
-      <p class="hero-sub">A personal ranking of sparkling waters by taste, sparkle and bottle aesthetics.</p>
+      <p class="hero-sub">My obsessive's daily ranking of sparkling water.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#rankings">See all rankings</a>
-        <a class="button" href="#suggestions">Suggest a water</a>
+        <a class="button" href="#suggestions">Suggest me a sparkling water</a>
       </div>
     </div>
   </header>
@@ -893,7 +893,7 @@
 
   <footer>
     <p class="footer-title">Stay fizzy</p>
-    <p class="footer-copy">For enquiries or bottle submissions, email <a href="mailto:atanjasova93@gmail.com">atanjasova93@gmail.com</a>.</p>
+    <p class="footer-copy">For enquiries or bottle submissions, email <a href="mailto:atanjasova93@gmail.com">me</a>.</p>
     <p class="footer-note">All ratings are personal and subjective. Comments and suggestions are stored locally on your device.</p>
   </footer>
 
@@ -919,39 +919,39 @@
     */
 
     const waters = [
-      { name: "Voss", nation: "Norway", code: "NO", taste: 10, sparkle: 6, aesthetics: 8.5, image: "images/voss.webp" },
-      { name: "San Pellegrino", nation: "Italy", code: "IT", taste: 9, sparkle: 7, aesthetics: 8, image: "images/san-pellegrino.webp" },
-      { name: "Vichy Catalan", nation: "Spain", code: "ES", taste: 7.5, sparkle: 7.5, aesthetics: 8.5, image: "images/vichy-catalan.webp" },
-      { name: "Highland Spring", nation: "Scotland", code: "GB-SCT", taste: 9, sparkle: 7.5, aesthetics: 6, image: "images/highland-spring.webp" },
-      { name: "Solan de Cabras", nation: "Spain", code: "ES", taste: 8, sparkle: 6.5, aesthetics: 8, image: "images/solan-de-cabras.webp" },
-      { name: "Asahi Wilkinson", nation: "Japan", code: "JP", taste: 8, sparkle: 9, aesthetics: 5, image: "images/asahi-wilkinson.webp" },
-      { name: "Icelandic Glacial", nation: "Iceland", code: "IS", taste: 8, sparkle: 6, aesthetics: 8, image: "images/icelandic-glacial.webp" },
-      { name: "Sarajevski Kiseljak", nation: "Bosnia and Herzegovina", code: "BA", taste: 7.5, sparkle: 7, aesthetics: 7, image: "images/sarajevski-kiseljak.webp" },
-      { name: "Kingsdown", nation: "England", code: "GB-ENG", taste: 8, sparkle: 6.5, aesthetics: 7, image: "images/kingsdown.webp" },
-      { name: "M&S Scottish Sparkling", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 7.5, aesthetics: 5, image: "images/m-and-s-scottish-sparkling.webp" },
-      { name: "Jamnica", nation: "Croatia", code: "HR", taste: 7, sparkle: 6.5, aesthetics: 7, image: "images/jamnica.webp" },
-      { name: "Borjomi", nation: "Georgia", code: "GE", taste: 5, sparkle: 7, aesthetics: 8, image: "images/borjomi.webp" },
-      { name: "Buxton", nation: "England", code: "GB-ENG", taste: 7, sparkle: 8, aesthetics: 4.5, image: "images/buxton.webp" },
-      { name: "Aqua Carpatica", nation: "Romania", code: "RO", taste: 7, sparkle: 6.5, aesthetics: 6, image: "images/aqua-carpatica.webp" },
-      { name: "Liquid Death", nation: "USA", code: "US", taste: 3, sparkle: 7.5, aesthetics: 8, image: "images/liquid-death.webp" },
-      { name: "San Benedetto Bolle Decise", nation: "Italy", code: "IT", taste: 6.5, sparkle: 7.5, aesthetics: 4.5, image: "images/san-benedetto-bolle-decise.webp" },
-      { name: "Deeside", nation: "Scotland", code: "GB-SCT", taste: 7, sparkle: 4.5, aesthetics: 6.5, image: "images/deeside.webp" },
-      { name: "Radnor", nation: "Wales", code: "GB-WLS", taste: 5, sparkle: 6, aesthetics: 7, image: "images/radnor.webp" },
-      { name: "The Newt in Somerset", nation: "England", code: "GB-ENG", taste: 7, sparkle: 4, aesthetics: 7, image: "images/the-newt-in-somerset.webp" },
-      { name: "Agua Coaliment", nation: "Spain", code: "ES", taste: 7, sparkle: 8, aesthetics: 3, image: "images/agua-coaliment.webp" },
-      { name: "Aqua Libra", nation: "England", code: "GB-ENG", taste: 4, sparkle: 6.5, aesthetics: 7.5, image: "images/aqua-libra.webp" },
-      { name: "Knjaz Milos", nation: "Serbia", code: "RS", taste: 5.5, sparkle: 6.5, aesthetics: 5.5, image: "images/knjaz-milos.webp" },
-      { name: "Strathmore", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 4.5, aesthetics: 5, image: "images/strathmore.webp" },
-      { name: "Flying Tiger Sparkling", nation: "Denmark", code: "DK", taste: 7, sparkle: 3.5, aesthetics: 6.5, image: "images/flying-tiger-sparkling.webp" },
-      { name: "Pret Sparkling", nation: "England", code: "GB-ENG", taste: 6, sparkle: 7, aesthetics: 3, image: "images/pret-sparkling.webp" },
-      { name: "Morrisons Yorkshire Vale", nation: "England", code: "GB-ENG", taste: 7, sparkle: 5, aesthetics: 3.5, image: "images/morrisons-yorkshire-vale.webp" },
-      { name: "Smart Water", nation: "England", code: "GB-ENG", taste: 6, sparkle: 3, aesthetics: 6, image: "images/smart-water.webp" },
-      { name: "Ice Valley", nation: "England", code: "GB-ENG", taste: 6, sparkle: 4, aesthetics: 4, image: "images/ice-valley.webp" },
-      { name: "Amazon Shepley Spring", nation: "England", code: "GB-ENG", taste: 5, sparkle: 7, aesthetics: 1, image: "images/amazon-shepley-spring.webp" },
-      { name: "Cano Water", nation: "England", code: "GB-ENG", taste: 2, sparkle: 4, aesthetics: 7, image: "images/cano-water.webp" },
-      { name: "Donat", nation: "Slovenia", code: "SI", taste: 1, sparkle: 7, aesthetics: 4, image: "images/donat.webp" },
-      { name: "Fonter", nation: "Spain", code: "ES", taste: 2, sparkle: 3, aesthetics: 5, image: "images/fonter.webp" },
-      { name: "Pedras Salgadas", nation: "Portugal", code: "PT", taste: 3, sparkle: 0.5, aesthetics: 5, image: "images/pedras-salgadas.webp" }
+      { name: "Voss", nation: "Norway", code: "NO", taste: 10, sparkle: 6, aesthetics: 8.5, image: "voss.JPG" },
+      { name: "San Pellegrino", nation: "Italy", code: "IT", taste: 9, sparkle: 7, aesthetics: 8, image: "sanpellegrino.JPG" },
+      { name: "Vichy Catalan", nation: "Spain", code: "ES", taste: 7.5, sparkle: 7.5, aesthetics: 8.5, image: "vichycatalan.JPG" },
+      { name: "Highland Spring", nation: "Scotland", code: "GB-SCT", taste: 9, sparkle: 7.5, aesthetics: 6, image: "highlandspring.JPG" },
+      { name: "Solan de Cabras", nation: "Spain", code: "ES", taste: 8, sparkle: 6.5, aesthetics: 8, image: "solandecabras.JPG" },
+      { name: "Asahi Wilkinson", nation: "Japan", code: "JP", taste: 8, sparkle: 9, aesthetics: 5, image: "asahiwilkinson.JPG" },
+      { name: "Icelandic Glacial", nation: "Iceland", code: "IS", taste: 8, sparkle: 6, aesthetics: 8, image: "icelandicglacial.JPG" },
+      { name: "Sarajevski Kiseljak", nation: "Bosnia and Herzegovina", code: "BA", taste: 7.5, sparkle: 7, aesthetics: 7, image: "sarajevskiKiseljak.JPG" },
+      { name: "Kingsdown", nation: "England", code: "GB-ENG", taste: 8, sparkle: 6.5, aesthetics: 7, image: "images/kingsdown.JPG" },
+      { name: "M&S Scottish Sparkling", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 7.5, aesthetics: 5, image: "msscottish.JPG" },
+      { name: "Jamnica", nation: "Croatia", code: "HR", taste: 7, sparkle: 6.5, aesthetics: 7, image: "jamnica.JPG" },
+      { name: "Borjomi", nation: "Georgia", code: "GE", taste: 5, sparkle: 7, aesthetics: 8, image: "borjomi.JPG" },
+      { name: "Buxton", nation: "England", code: "GB-ENG", taste: 7, sparkle: 8, aesthetics: 4.5, image: "buxton.JPG" },
+      { name: "Aqua Carpatica", nation: "Romania", code: "RO", taste: 7, sparkle: 6.5, aesthetics: 6, image: "aquacarpatica.JPG" },
+      { name: "Liquid Death", nation: "USA", code: "US", taste: 3, sparkle: 7.5, aesthetics: 8, image: "liquiddeath.JPG" },
+      { name: "San Benedetto Bolle Decise", nation: "Italy", code: "IT", taste: 6.5, sparkle: 7.5, aesthetics: 4.5, image: "sanbenedetto.JPG" },
+      { name: "Deeside", nation: "Scotland", code: "GB-SCT", taste: 7, sparkle: 4.5, aesthetics: 6.5, image: "deeside.JPG" },
+      { name: "Radnor", nation: "Wales", code: "GB-WLS", taste: 5, sparkle: 6, aesthetics: 7, image: "radnor.JPG" },
+      { name: "The Newt in Somerset", nation: "England", code: "GB-ENG", taste: 7, sparkle: 4, aesthetics: 7, image: "thenewtinsomerset.JPG" },
+      { name: "Agua Coaliment", nation: "Spain", code: "ES", taste: 7, sparkle: 8, aesthetics: 3, image: "aguacoaliment.JPG" },
+      { name: "Aqua Libra", nation: "England", code: "GB-ENG", taste: 4, sparkle: 6.5, aesthetics: 7.5, image: "aqualibra.JPG" },
+      { name: "Knjaz Milos", nation: "Serbia", code: "RS", taste: 5.5, sparkle: 6.5, aesthetics: 5.5, image: "knjazmilos.JPG" },
+      { name: "Strathmore", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 4.5, aesthetics: 5, image: "strathmore.JPG" },
+      { name: "Flying Tiger Sparkling", nation: "Denmark", code: "DK", taste: 7, sparkle: 3.5, aesthetics: 6.5, image: "flyingtiger.JPG" },
+      { name: "Pret Sparkling", nation: "England", code: "GB-ENG", taste: 6, sparkle: 7, aesthetics: 3, image: "pretsparkling.JPG" },
+      { name: "Morrisons Yorkshire Vale", nation: "England", code: "GB-ENG", taste: 7, sparkle: 5, aesthetics: 3.5, image: "morrisonsyorkshirevale.JPG" },
+      { name: "Smart Water", nation: "England", code: "GB-ENG", taste: 6, sparkle: 3, aesthetics: 6, image: "smartwater.JPG" },
+      { name: "Ice Valley", nation: "England", code: "GB-ENG", taste: 6, sparkle: 4, aesthetics: 4, image: "icevalley.JPG" },
+      { name: "Amazon Shepley Spring", nation: "England", code: "GB-ENG", taste: 5, sparkle: 7, aesthetics: 1, image: "amazon.JPG" },
+      { name: "Cano Water", nation: "England", code: "GB-ENG", taste: 2, sparkle: 4, aesthetics: 7, image: "canowater.JPG" },
+      { name: "Donat", nation: "Slovenia", code: "SI", taste: 1, sparkle: 7, aesthetics: 4, image: "donat.JPG" },
+      { name: "Fonter", nation: "Spain", code: "ES", taste: 2, sparkle: 3, aesthetics: 5, image: "fonter.JPG" },
+      { name: "Pedras Salgadas", nation: "Portugal", code: "PT", taste: 3, sparkle: 0.5, aesthetics: 5, image: "pedrassalgadas.JPG" }
     ].map((water, index) => ({
       ...water,
       rank: index + 1,
