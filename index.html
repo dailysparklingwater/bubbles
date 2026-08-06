@@ -7,191 +7,227 @@
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --navy: #0A0F1E;
       --ice: #F0F4FF;
       --silver: #C8D8E8;
       --gold: #E8C547;
-      --accent: #47A8E8;
       --muted: rgba(200,216,232,0.45);
       --sans: 'DM Sans', sans-serif;
       --display: 'Bebas Neue', sans-serif;
     }
-
     html { scroll-behavior: smooth; }
+    body { background: var(--navy); color: var(--ice); font-family: var(--sans); overflow-x: hidden; }
 
-    body {
-      background: var(--navy);
-      color: var(--ice);
-      font-family: var(--sans);
-      overflow-x: hidden;
-    }
-
-    /* ── NAV ── */
+    /* NAV */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
       padding: 20px 40px;
-      background: linear-gradient(to bottom, rgba(10,15,30,0.9) 0%, transparent 100%);
-      backdrop-filter: blur(8px);
+      background: linear-gradient(to bottom, rgba(10,15,30,0.95) 0%, transparent 100%);
     }
-    .nav-logo {
-      font-family: var(--display);
-      font-size: 22px;
-      letter-spacing: 0.15em;
-      color: var(--gold);
-    }
-    .nav-date {
-      font-size: 12px;
-      font-weight: 300;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--silver);
-    }
+    .nav-logo { font-family: var(--display); font-size: 22px; letter-spacing: 0.15em; color: var(--gold); }
+    .nav-date { font-size: 12px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--silver); }
+    .nav-count { font-size: 12px; font-weight: 300; letter-spacing: 0.1em; color: var(--silver); }
 
-    /* ── HERO ── */
+    /* HERO */
     .hero {
-      height: 100vh;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      text-align: center;
-      position: relative;
-      overflow: hidden;
+      height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; text-align: center;
+      position: relative; overflow: hidden;
     }
     .hero-bg {
       position: absolute; inset: 0;
       background: radial-gradient(ellipse at 50% 60%, rgba(232,197,71,0.08) 0%, transparent 70%),
-                  radial-gradient(ellipse at 20% 80%, rgba(100,160,220,0.12) 0%, transparent 50%);
+                  radial-gradient(ellipse at 20% 80%, rgba(100,160,220,0.12) 0%, transparent 50%),
+                  radial-gradient(ellipse at 80% 20%, rgba(60,100,180,0.1) 0%, transparent 50%);
     }
-    .hero-title {
-      font-family: var(--display);
-      font-size: clamp(72px, 14vw, 180px);
-      line-height: 0.88;
-      letter-spacing: 0.03em;
-      color: var(--ice);
-      position: relative;
+    .bubbles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+    .bubble {
+      position: absolute; border-radius: 50%;
+      background: rgba(200,216,232,0.06); border: 1px solid rgba(200,216,232,0.12);
+      animation: rise linear infinite;
     }
+    @keyframes rise {
+      0%   { transform: translateY(110vh) scale(0.8); opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 0.6; }
+      100% { transform: translateY(-20vh) scale(1.1); opacity: 0; }
+    }
+    .hero-eyebrow { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; font-weight: 400; position: relative; }
+    .hero-title { font-family: var(--display); font-size: clamp(72px, 14vw, 180px); line-height: 0.88; letter-spacing: 0.03em; color: var(--ice); position: relative; }
     .hero-title span { color: var(--gold); }
-    .hero-sub {
-      margin-top: 32px;
-      font-size: 15px;
-      font-weight: 300;
-      color: var(--silver);
-      letter-spacing: 0.06em;
-      position: relative;
+    .hero-sub { margin-top: 32px; font-size: 15px; font-weight: 300; color: var(--silver); letter-spacing: 0.06em; position: relative; }
+    .scroll-cue {
+      position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--silver); opacity: 0.6; animation: bob 2.5s ease-in-out infinite;
+    }
+    @keyframes bob { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+    /* TODAY'S PICK — special top card */
+    .todays-pick {
+      min-height: 100vh; position: relative; overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      border-top: 1px solid rgba(232,197,71,0.3);
+    }
+    .todays-pick-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(232,197,71,0.07) 0%, transparent 70%);
+    }
+    .todays-rank-bg {
+      position: absolute; font-family: var(--display);
+      font-size: clamp(300px, 50vw, 600px); line-height: 1;
+      color: rgba(232,197,71,0.04); top: 50%; left: 50%;
+      transform: translate(-50%,-50%); pointer-events: none; user-select: none;
+    }
+    .todays-inner {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: 1fr 1fr;
+      width: 100%; max-width: 1200px; padding: 100px 60px; gap: 60px; align-items: center;
+    }
+    .todays-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--gold); color: var(--navy);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.25em; text-transform: uppercase;
+      padding: 6px 14px; border-radius: 2px; margin-bottom: 20px;
+    }
+    .todays-label { font-size: 11px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 10px; }
+    .todays-name { font-family: var(--display); font-size: clamp(52px, 8vw, 110px); line-height: 0.9; color: var(--ice); margin-bottom: 16px; }
+    .todays-nation { font-size: 13px; letter-spacing: 0.15em; color: var(--silver); margin-bottom: 30px; text-transform: uppercase; }
+    .todays-scores { display: flex; gap: 28px; flex-wrap: wrap; }
+    .todays-img-wrap { display: flex; align-items: center; justify-content: center; }
+    .todays-img-wrap img {
+      width: clamp(160px, 22vw, 300px); height: auto;
+      filter: drop-shadow(0 40px 80px rgba(0,0,0,0.6)) drop-shadow(0 0 60px rgba(232,197,71,0.15));
+      border-radius: 16px; object-fit: cover;
+    }
+    .todays-img-placeholder {
+      width: clamp(160px, 22vw, 300px); height: clamp(280px, 42vw, 500px);
+      border-radius: 120px;
+      background: linear-gradient(160deg, rgba(232,197,71,0.15) 0%, rgba(100,140,200,0.08) 100%);
+      border: 1px solid rgba(232,197,71,0.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 56px;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.4));
     }
 
-    /* ── WATER CARD ── */
+    /* SCORE PILL */
+    .score-pill { display: flex; flex-direction: column; gap: 4px; }
+    .score-pill-label { font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase; color: rgba(200,216,232,0.5); }
+    .score-pill-val { font-family: var(--display); font-size: 32px; letter-spacing: 0.01em; color: var(--ice); line-height: 1; }
+    .score-pill-bar { width: 70px; height: 2px; background: rgba(200,216,232,0.12); border-radius: 2px; margin-top: 5px; overflow:hidden; }
+    .score-pill-fill { height: 100%; background: var(--gold); border-radius: 2px; transform-origin:left; transform:scaleX(0); transition: transform 0.9s cubic-bezier(0.25,1,0.5,1) 0.4s; }
+    .visible .score-pill-fill { transform: scaleX(1); }
+    .total-pill .score-pill-val { color: var(--gold); }
+
+    /* SECTION LABEL */
+    .rank-divider {
+      display: flex; align-items: center; padding: 16px 40px; gap: 20px;
+    }
+    .rank-divider-line { flex: 1; height: 1px; background: rgba(200,216,232,0.08); }
+    .rank-divider-text { font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(200,216,232,0.25); white-space: nowrap; }
+
+    /* WATER CARD */
     .water-card {
-      min-height: 100vh;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      position: relative;
-      overflow: hidden;
-      border-top: 1px solid rgba(200,216,232,0.08);
+      min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr;
+      position: relative; overflow: hidden;
+      border-top: 1px solid rgba(200,216,232,0.06);
     }
     .water-card:nth-child(even) .card-visual { order: 2; }
     .water-card:nth-child(even) .card-info   { order: 1; }
-
+    .card-rank-bg {
+      position: absolute; font-family: var(--display);
+      font-size: clamp(220px, 36vw, 480px); line-height: 1; letter-spacing: -0.04em;
+      color: rgba(200,216,232,0.035); top: 50%; left: 50%;
+      transform: translate(-50%,-50%); pointer-events: none; user-select: none; z-index: 0;
+    }
     .card-visual {
-      position: relative;
-      display: flex; align-items: center; justify-content: center;
-      padding: 80px 60px;
-      z-index: 1;
+      position: relative; display: flex; align-items: center; justify-content: center;
+      padding: 80px 60px; z-index: 1;
     }
-    .card-img {
-      width: clamp(200px, 25vw, 350px);
-      height: auto;
-      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5));
+    .card-visual-inner { position: relative; text-align: center; }
+    .card-rank-number {
+      font-family: var(--display); font-size: clamp(80px, 12vw, 160px);
+      line-height: 1; color: var(--gold); letter-spacing: -0.02em; display: block;
+      margin-bottom: -16px;
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .card-bottle-img {
+      width: clamp(120px, 16vw, 220px); height: auto;
+      filter: drop-shadow(0 30px 60px rgba(0,0,0,0.5)) drop-shadow(0 0 40px rgba(100,160,220,0.15));
+      border-radius: 12px; object-fit: cover;
       opacity: 0; transform: translateY(40px) scale(0.95);
-      transition: opacity 0.8s ease, transform 0.8s ease;
-      object-fit: contain;
+      transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
     }
-    .water-card.visible .card-img { opacity: 1; transform: translateY(0) scale(1); }
+    .card-bottle-placeholder {
+      width: clamp(120px, 16vw, 220px); height: clamp(240px, 36vw, 440px);
+      border-radius: 100px;
+      background: linear-gradient(160deg, rgba(200,216,232,0.12) 0%, rgba(100,140,200,0.06) 100%);
+      border: 1px solid rgba(200,216,232,0.12);
+      display: flex; align-items: center; justify-content: center; font-size: 42px;
+      opacity: 0; transform: translateY(40px) scale(0.95);
+      transition: opacity 0.8s ease 0.15s, transform 0.8s ease 0.15s;
+    }
+    .water-card.visible .card-rank-number,
+    .water-card.visible .card-bottle-img,
+    .water-card.visible .card-bottle-placeholder { opacity: 1; transform: translateY(0) scale(1); }
 
     .card-info {
       display: flex; flex-direction: column; justify-content: center;
-      padding: 80px 60px;
-      position: relative; z-index: 1;
+      padding: 80px 60px; position: relative; z-index: 1;
     }
-    .card-brand {
-      font-size: 11px;
-      letter-spacing: 0.3em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 12px;
+    .card-stripe {
+      position: absolute; top: 0; bottom: 0; left: 0; width: 3px;
+      background: linear-gradient(to bottom, var(--gold), transparent); opacity: 0;
+      transition: opacity 0.4s ease 0.6s;
+    }
+    .water-card.visible .card-stripe { opacity: 0.5; }
+    .card-nation {
+      font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: var(--gold);
+      margin-bottom: 10px; font-weight: 400;
+      opacity: 0; transform: translateX(-18px); transition: opacity 0.6s ease 0.2s, transform 0.6s ease 0.2s;
     }
     .card-name {
-      font-family: var(--display);
-      font-size: clamp(42px, 6vw, 88px);
-      line-height: 0.92;
-      color: var(--ice);
-      margin-bottom: 40px;
+      font-family: var(--display); font-size: clamp(36px, 5vw, 78px); line-height: 0.92;
+      letter-spacing: 0.02em; color: var(--ice); margin-bottom: 28px;
+      opacity: 0; transform: translateX(-18px); transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
     }
-
     .card-scores {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 32px;
+      display: flex; gap: 24px; flex-wrap: wrap;
+      opacity: 0; transform: translateX(-18px); transition: opacity 0.6s ease 0.4s, transform 0.6s ease 0.4s;
     }
-    .score-item { display: flex; flex-direction: column; gap: 4px; }
-    .score-item.total-score { grid-column: span 2; margin-top: 10px; }
-    
-    .score-label {
-      font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase;
-      color: rgba(200,216,232,0.5);
-    }
-    .score-value {
-      font-family: var(--display);
-      font-size: 28px; color: var(--ice);
-    }
-    .score-item.total-score .score-value { color: var(--gold); font-size: 48px; }
+    .water-card.visible .card-nation,
+    .water-card.visible .card-name,
+    .water-card.visible .card-scores { opacity: 1; transform: translateX(0); }
 
-    .score-bar-wrap {
-      width: 100%; height: 3px;
-      background: rgba(200,216,232,0.1);
-      margin-top: 8px;
-    }
-    .score-bar {
-      height: 100%; background: var(--accent);
-      width: 0; transition: width 1.5s cubic-bezier(0.19, 1, 0.22, 1);
-    }
-    .total-score .score-bar { background: var(--gold); }
-    .water-card.visible .score-bar { width: var(--w); }
-
-    /* ── DIVIDER ── */
-    .rank-divider {
-      display: flex; align-items: center;
-      padding: 40px; gap: 20px;
-      background: rgba(255,255,255,0.02);
-    }
-    .rank-divider-line { flex: 1; height: 1px; background: rgba(200,216,232,0.1); }
-    .rank-divider-text {
-      font-size: 12px; letter-spacing: 0.3em; text-transform: uppercase;
-      color: var(--gold); font-weight: 600;
-    }
-
-    /* ── FOOTER ── */
+    /* FOOTER */
     footer {
-      padding: 100px 40px;
-      text-align: center;
-      border-top: 1px solid rgba(200,216,232,0.1);
+      padding: 80px 40px 60px; text-align: center;
+      border-top: 1px solid rgba(200,216,232,0.08);
     }
-    .footer-email {
-      color: var(--gold);
-      text-decoration: none;
-      font-size: 18px;
-      letter-spacing: 0.05em;
-      border-bottom: 1px solid transparent;
-      transition: border 0.3s;
-    }
-    .footer-email:hover { border-bottom: 1px solid var(--gold); }
+    .footer-title { font-family: var(--display); font-size: clamp(36px,6vw,72px); color: var(--ice); margin-bottom: 16px; letter-spacing: 0.05em; }
+    .footer-sub { font-size: 14px; font-weight: 300; color: var(--silver); letter-spacing: 0.06em; margin-bottom: 12px; }
+    .footer-contact { font-size: 13px; color: var(--silver); margin-bottom: 8px; }
+    .footer-contact a { color: var(--gold); text-decoration: none; border-bottom: 1px solid rgba(232,197,71,0.3); padding-bottom: 1px; }
+    .footer-contact a:hover { border-color: var(--gold); }
+    .footer-note { font-size: 11px; color: rgba(200,216,232,0.3); letter-spacing: 0.1em; margin-top: 32px; }
 
+    /* RESPONSIVE */
     @media (max-width: 768px) {
-      .water-card { grid-template-columns: 1fr; }
-      .card-visual { padding: 40px; min-height: 400px; }
-      .card-info { padding: 40px; }
+      nav { padding: 16px 20px; }
+      .todays-inner { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+      .todays-img-wrap { order: -1; }
+      .water-card { grid-template-columns: 1fr; min-height: auto; }
+      .water-card:nth-child(even) .card-visual,
+      .water-card:nth-child(even) .card-info { order: unset; }
+      .card-visual { padding: 60px 24px 20px; }
+      .card-info   { padding: 20px 24px 60px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
     }
   </style>
 </head>
@@ -200,183 +236,802 @@
 <nav>
   <span class="nav-logo">SPARKLING ✦</span>
   <span class="nav-date" id="today-date"></span>
+  <span class="nav-count">33 Waters Ranked</span>
 </nav>
 
+<!-- HERO -->
 <section class="hero">
   <div class="hero-bg"></div>
-  <p style="letter-spacing: 0.3em; color: var(--gold); text-transform: uppercase; font-size: 12px; margin-bottom: 20px;">The Daily Review</p>
+  <div class="bubbles" id="bubbles"></div>
+  <p class="hero-eyebrow">Updated Daily · Honest Reviews</p>
   <h1 class="hero-title">THE<br><span>BUBBLE</span><br>BOARD</h1>
-  <p class="hero-sub">Ranking the world's waters, one bottle at a time.</p>
+  <p class="hero-sub">One obsessive's daily ranking of sparkling water</p>
+  <div class="scroll-cue">
+    <svg width="14" height="22" viewBox="0 0 14 22" fill="none">
+      <rect x="1" y="1" width="12" height="16" rx="6" stroke="currentColor" stroke-width="1.2"/>
+      <circle cx="7" cy="6" r="1.5" fill="currentColor">
+        <animate attributeName="cy" values="6;11;6" dur="2s" repeatCount="indefinite"/>
+        <animate attributeName="opacity" values="1;0.2;1" dur="2s" repeatCount="indefinite"/>
+      </circle>
+    </svg>
+    Scroll to rank
+  </div>
 </section>
 
+<!-- TODAY'S NEW ADDITION -->
+<section class="todays-pick visible" id="todays-pick">
+  <div class="todays-pick-bg"></div>
+  <div class="todays-rank-bg">NEW</div>
+  <div class="todays-inner">
+    <div class="todays-text">
+      <div class="todays-badge">✦ Added Today</div>
+      <div class="todays-label">Today's New Entry</div>
+      <h2 class="todays-name">AQUA LIBRA</h2>
+      <p class="todays-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</p>
+      <div class="todays-scores">
+        <div class="score-pill">
+          <span class="score-pill-label">Taste</span>
+          <span class="score-pill-val">4</span>
+          <div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div>
+        </div>
+        <div class="score-pill">
+          <span class="score-pill-label">Sparkle</span>
+          <span class="score-pill-val">6.5</span>
+          <div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div>
+        </div>
+        <div class="score-pill">
+          <span class="score-pill-label">Aesthetics</span>
+          <span class="score-pill-val">7.5</span>
+          <div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div>
+        </div>
+        <div class="score-pill total-pill">
+          <span class="score-pill-label">Total</span>
+          <span class="score-pill-val">6.0</span>
+          <div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="todays-img-wrap">
+      <div class="todays-img-placeholder">💧</div>
+    </div>
+  </div>
+</section>
+
+<!-- ALL RANKINGS -->
 <div id="rankings">
 
-  <!-- ADDED TODAY: AQUA LIBRA -->
-  <div class="rank-divider">
-    <div class="rank-divider-line"></div>
-    <span class="rank-divider-text">Fresh Addition · Added Today</span>
-    <div class="rank-divider-line"></div>
+<!-- Voss 8.167 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#1</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="1">
+  <div class="card-rank-bg">1</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">01</span>
+    <div class="card-bottle-placeholder">💧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇳🇴 Norway</span>
+    <h2 class="card-name">VOSS</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">10</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:100%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:85%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">8.17</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:82%"></div></div></div>
+    </div>
   </div>
+</article>
 
-  <article class="water-card visible" id="new-entry">
-    <div class="card-visual">
-      <!-- REPLACE WITH YOUR IMAGE -->
-      <img src="aqua-libra.jpg" alt="Aqua Libra" class="card-img" onerror="this.src='https://placehold.co/400x800/0A0F1E/C8D8E8?text=Aqua+Libra'">
+<!-- San Pellegrino 8.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#2</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="2">
+  <div class="card-rank-bg">2</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">02</span>
+    <div class="card-bottle-placeholder">🫧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇮🇹 Italy</span>
+    <h2 class="card-name">SAN PELLEGRINO</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">9</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:90%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">8.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
     </div>
-    <div class="card-info">
-      <span class="card-brand">England</span>
-      <h2 class="card-name">AQUA LIBRA</h2>
-      <div class="card-scores">
-        <div class="score-item">
-          <span class="score-label">Taste</span>
-          <span class="score-value">4.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 40%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Sparkle</span>
-          <span class="score-value">6.5</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 65%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Aesthetics</span>
-          <span class="score-value">7.5</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 75%"></div></div>
-        </div>
-        <div class="score-item total-score">
-          <span class="score-label">Total Score</span>
-          <span class="score-value">6.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 60%"></div></div>
-        </div>
-      </div>
-    </div>
-  </article>
-
-  <!-- RANK #1: VOSS -->
-  <div class="rank-divider">
-    <div class="rank-divider-line"></div>
-    <span class="rank-divider-text">The Leaderboard</span>
-    <div class="rank-divider-line"></div>
   </div>
+</article>
 
-  <article class="water-card">
-    <div class="card-visual">
-      <img src="voss.jpg" alt="Voss" class="card-img" onerror="this.src='https://placehold.co/400x800/0A0F1E/C8D8E8?text=Voss'">
+<!-- Vichy Catalan 7.83 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#3</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="3">
+  <div class="card-rank-bg">3</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">03</span>
+    <div class="card-bottle-placeholder">💦</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇪🇸 Spain</span>
+    <h2 class="card-name">VICHY CATALAN</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:85%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.83</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:78%"></div></div></div>
     </div>
-    <div class="card-info">
-      <span class="card-brand">Norway · Rank #1</span>
-      <h2 class="card-name">VOSS</h2>
-      <div class="card-scores">
-        <div class="score-item">
-          <span class="score-label">Taste</span>
-          <span class="score-value">10.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 100%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Sparkle</span>
-          <span class="score-value">6.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 60%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Aesthetics</span>
-          <span class="score-value">8.5</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 85%"></div></div>
-        </div>
-        <div class="score-item total-score">
-          <span class="score-label">Total Score</span>
-          <span class="score-value">8.17</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 81.7%"></div></div>
-        </div>
-      </div>
-    </div>
-  </article>
+  </div>
+</article>
 
-  <!-- RANK #2: SAN PELLEGRINO -->
-  <article class="water-card">
-    <div class="card-visual">
-      <img src="san-pellegrino.jpg" alt="San Pellegrino" class="card-img" onerror="this.src='https://placehold.co/400x800/0A0F1E/C8D8E8?text=San+Pellegrino'">
+<!-- Highland spring 7.5 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#4</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="4">
+  <div class="card-rank-bg">4</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">04</span>
+    <div class="card-bottle-placeholder">🌊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span>
+    <h2 class="card-name">HIGHLAND SPRING</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">9</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:90%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
     </div>
-    <div class="card-info">
-      <span class="card-brand">Italy · Rank #2</span>
-      <h2 class="card-name">SAN PELLEGRINO</h2>
-      <div class="card-scores">
-        <div class="score-item">
-          <span class="score-label">Taste</span>
-          <span class="score-value">9.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 90%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Sparkle</span>
-          <span class="score-value">7.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 70%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Aesthetics</span>
-          <span class="score-value">8.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 80%"></div></div>
-        </div>
-        <div class="score-item total-score">
-          <span class="score-label">Total Score</span>
-          <span class="score-value">8.0</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 80%"></div></div>
-        </div>
-      </div>
-    </div>
-  </article>
+  </div>
+</article>
 
-  <!-- RANK #3: VICHY CATALAN -->
-  <article class="water-card">
-    <div class="card-visual">
-      <img src="vichy-catalan.jpg" alt="Vichy Catalan" class="card-img" onerror="this.src='https://placehold.co/400x800/0A0F1E/C8D8E8?text=Vichy+Catalan'">
+<!-- Solan de Cabras 7.5 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#5</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="5">
+  <div class="card-rank-bg">5</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">05</span>
+    <div class="card-bottle-placeholder">💧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇪🇸 Spain</span>
+    <h2 class="card-name">SOLAN DE CABRAS</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
     </div>
-    <div class="card-info">
-      <span class="card-brand">Spain · Rank #3</span>
-      <h2 class="card-name">VICHY CATALAN</h2>
-      <div class="card-scores">
-        <div class="score-item">
-          <span class="score-label">Taste</span>
-          <span class="score-value">7.5</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 75%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Sparkle</span>
-          <span class="score-value">7.5</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 75%"></div></div>
-        </div>
-        <div class="score-item">
-          <span class="score-label">Aesthetics</span>
-          <span class="score-value">8.5</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 85%"></div></div>
-        </div>
-        <div class="score-item total-score">
-          <span class="score-label">Total Score</span>
-          <span class="score-value">7.83</span>
-          <div class="score-bar-wrap"><div class="score-bar" style="--w: 78.3%"></div></div>
-        </div>
-      </div>
+  </div>
+</article>
+
+<!-- Asahi Wilkinson 7.3 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#6</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="6">
+  <div class="card-rank-bg">6</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">06</span>
+    <div class="card-bottle-placeholder">🫧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇯🇵 Japan</span>
+    <h2 class="card-name">ASAHI WILKINSON</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">9</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:90%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:73%"></div></div></div>
     </div>
-  </article>
+  </div>
+</article>
 
-</div>
+<!-- Icelandic Glacial 7.3 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#7</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="7">
+  <div class="card-rank-bg">7</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">07</span>
+    <div class="card-bottle-placeholder">🧊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇮🇸 Iceland</span>
+    <h2 class="card-name">ICELANDIC GLACIAL</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:73%"></div></div></div>
+    </div>
+  </div>
+</article>
 
+<!-- Sarajevski Kiseljak 7.167 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#8</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="8">
+  <div class="card-rank-bg">8</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">08</span>
+    <div class="card-bottle-placeholder">💦</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇧🇦 Bosnia & Herzegovina</span>
+    <h2 class="card-name">SARAJEVSKI KISELJAK</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.17</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:72%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Kingsdown 7.167 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#9</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="9">
+  <div class="card-rank-bg">9</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">09</span>
+    <div class="card-bottle-placeholder">🌊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">KINGSDOWN</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">7.17</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:72%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- M&S Scottish Sparkling 6.83 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#10</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="10">
+  <div class="card-rank-bg">10</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">10</span>
+    <div class="card-bottle-placeholder">💧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span>
+    <h2 class="card-name">M&S SCOTTISH SPARKLING</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.83</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:68%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Jamnica 6.83 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#11</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="11">
+  <div class="card-rank-bg">11</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">11</span>
+    <div class="card-bottle-placeholder">🫧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇭🇷 Croatia</span>
+    <h2 class="card-name">JAMNICA</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.83</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:68%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Borjomi 6.67 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#12</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="12">
+  <div class="card-rank-bg">12</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">12</span>
+    <div class="card-bottle-placeholder">💦</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇬🇪 Georgia</span>
+    <h2 class="card-name">BORJOMI</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.67</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:67%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Buxton 6.5 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#13</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="13">
+  <div class="card-rank-bg">13</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">13</span>
+    <div class="card-bottle-placeholder">🌊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">BUXTON</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">4.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:45%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Aqua carpatica 6.5 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#14</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="14">
+  <div class="card-rank-bg">14</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">14</span>
+    <div class="card-bottle-placeholder">💧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇷🇴 Romania</span>
+    <h2 class="card-name">AQUA CARPATICA</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Liquid death 6.167 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#15</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="15">
+  <div class="card-rank-bg">15</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">15</span>
+    <div class="card-bottle-placeholder">💀</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇺🇸 USA</span>
+    <h2 class="card-name">LIQUID DEATH</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:30%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.17</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:62%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- San Benedetto 6.167 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#16</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="16">
+  <div class="card-rank-bg">16</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">16</span>
+    <div class="card-bottle-placeholder">🫧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇮🇹 Italy</span>
+    <h2 class="card-name">SAN BENEDETTO BOLLE DEC.</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">4.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:45%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.17</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:62%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Deeside 6.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#17</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="17">
+  <div class="card-rank-bg">17</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">17</span>
+    <div class="card-bottle-placeholder">💦</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span>
+    <h2 class="card-name">DEESIDE</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">4.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:45%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Radnor 6.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#18</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="18">
+  <div class="card-rank-bg">18</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">18</span>
+    <div class="card-bottle-placeholder">🌊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁷󠁬󠁳󠁿 Wales</span>
+    <h2 class="card-name">RADNOR</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- The Newt in Somerset 6.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#19</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="19">
+  <div class="card-rank-bg">19</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">19</span>
+    <div class="card-bottle-placeholder">🐸</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">THE NEWT IN SOMERSET</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">4</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Agua Coaliment 6.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#20</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="20">
+  <div class="card-rank-bg">20</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">20</span>
+    <div class="card-bottle-placeholder">💧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇪🇸 Spain</span>
+    <h2 class="card-name">AGUA COALIMENT</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:30%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Aqua libra 6.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#21</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="21">
+  <div class="card-rank-bg">21</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">21</span>
+    <div class="card-bottle-placeholder">🫧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">AQUA LIBRA</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">4</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:75%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">6.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Knjaz Milos 5.83 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#22</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="22">
+  <div class="card-rank-bg">22</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">22</span>
+    <div class="card-bottle-placeholder">💦</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇷🇸 Serbia</span>
+    <h2 class="card-name">KNJAZ MILOS</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">5.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:55%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">5.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:55%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">5.83</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:58%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Strathmore 5.83 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#23</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="23">
+  <div class="card-rank-bg">23</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">23</span>
+    <div class="card-bottle-placeholder">🌊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁳󠁣󠁴󠁿 Scotland</span>
+    <h2 class="card-name">STRATHMORE</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">8</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:80%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">4.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:45%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">5.83</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:58%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Flying tiger sparkling 5.6 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#24</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="24">
+  <div class="card-rank-bg">24</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">24</span>
+    <div class="card-bottle-placeholder">🐯</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇩🇰 Denmark</span>
+    <h2 class="card-name">FLYING TIGER SPARKLING</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">3.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:35%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">5.6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:56%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Pret sparkling 5.3 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#25</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="25">
+  <div class="card-rank-bg">25</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">25</span>
+    <div class="card-bottle-placeholder">☕</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">PRET SPARKLING</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:30%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">5.3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:53%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Morrisons Yorkshire Vale 5.167 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#26</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="26">
+  <div class="card-rank-bg">26</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">26</span>
+    <div class="card-bottle-placeholder">🛒</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">MORRISONS YORKSHIRE VALE</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">6.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:65%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">4</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">5.17</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:52%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Smart water 5.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#27</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="27">
+  <div class="card-rank-bg">27</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">27</span>
+    <div class="card-bottle-placeholder">🧠</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">SMART WATER</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:30%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">5.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Ice Valley 4.67 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#28</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="28">
+  <div class="card-rank-bg">28</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">28</span>
+    <div class="card-bottle-placeholder">🧊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">ICE VALLEY</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">6</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:60%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">4</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">4</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">4.67</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:47%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Amazon Shepley Spring 4.3 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#29</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="29">
+  <div class="card-rank-bg">29</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">29</span>
+    <div class="card-bottle-placeholder">📦</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">AMAZON SHEPLEY SPRING</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">1</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:10%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">4.3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:43%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Cano water 4.3 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#30</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="30">
+  <div class="card-rank-bg">30</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">30</span>
+    <div class="card-bottle-placeholder">🥫</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🏴󠁧󠁢󠁥󠁮󠁧󠁿 England</span>
+    <h2 class="card-name">CANO WATER</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">2</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:20%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">4</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">7</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:70%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">4.3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:43%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Donat 4.0 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#31</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="31">
+  <div class="card-rank-bg">31</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">31</span>
+    <div class="card-bottle-placeholder">💊</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇸🇮 Slovenia</span>
+    <h2 class="card-name">DONAT</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">2.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:25%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">4.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:45%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">4.0</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:40%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Fonter 3.3 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#32</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="32">
+  <div class="card-rank-bg">32</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">32</span>
+    <div class="card-bottle-placeholder">💧</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇪🇸 Spain</span>
+    <h2 class="card-name">FONTER</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">2</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:20%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:30%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">3.3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:33%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+<!-- Pedras Salgadas 2.83 -->
+<div class="rank-divider"><div class="rank-divider-line"></div><span class="rank-divider-text">#33 — Dead Last</span><div class="rank-divider-line"></div></div>
+<article class="water-card" data-rank="33">
+  <div class="card-rank-bg">33</div>
+  <div class="card-visual"><div class="card-visual-inner">
+    <span class="card-rank-number">33</span>
+    <div class="card-bottle-placeholder">💀</div>
+  </div></div>
+  <div class="card-info">
+    <div class="card-stripe"></div>
+    <span class="card-nation">🇵🇹 Portugal</span>
+    <h2 class="card-name">PEDRAS SALGADAS</h2>
+    <div class="card-scores">
+      <div class="score-pill"><span class="score-pill-label">Taste</span><span class="score-pill-val">3</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:30%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Sparkle</span><span class="score-pill-val">0.5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:5%"></div></div></div>
+      <div class="score-pill"><span class="score-pill-label">Aesthetics</span><span class="score-pill-val">5</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:50%"></div></div></div>
+      <div class="score-pill total-pill"><span class="score-pill-label">Total</span><span class="score-pill-val">2.83</span><div class="score-pill-bar"><div class="score-pill-fill" style="width:28%"></div></div></div>
+    </div>
+  </div>
+</article>
+
+</div><!-- end rankings -->
+
+<!-- FOOTER -->
 <footer>
-  <p style="margin-bottom: 20px; opacity: 0.6;">For enquiries and to send me your water DM my address:</p>
-  <a href="mailto:atanjasova93@gmail.com" class="footer-email">atanjasova93@gmail.com</a>
-  <p style="margin-top: 60px; font-size: 10px; opacity: 0.3; letter-spacing: 0.2em;">THE BUBBLE BOARD © 2024</p>
+  <p class="footer-title">STAY FIZZY ✦</p>
+  <p class="footer-sub">Back tomorrow with a fresh addition</p>
+  <p class="footer-contact">For enquiries and to send me your water — DM me at <a href="mailto:atanjasova93@gmail.com">atanjasova93@gmail.com</a></p>
+  <p class="footer-note">All opinions are entirely my own and deeply subjective. Updated daily.</p>
 </footer>
 
 <script>
-  // Set Date
+  // Today's date
   const d = new Date();
-  document.getElementById('today-date').textContent = d.toLocaleDateString('en-GB', { day:'numeric', month:'long', year:'numeric' });
+  document.getElementById('today-date').textContent =
+    d.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long', year:'numeric' });
 
-  // Intersection Observer for animations
+  // Bubbles
+  const container = document.getElementById('bubbles');
+  for (let i = 0; i < 22; i++) {
+    const b = document.createElement('div');
+    b.className = 'bubble';
+    const size = Math.random() * 60 + 8;
+    b.style.cssText = `width:${size}px;height:${size}px;left:${Math.random()*100}%;animation-duration:${Math.random()*12+8}s;animation-delay:${Math.random()*-15}s;`;
+    container.appendChild(b);
+  }
+
+  // Scroll reveal
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    });
-  }, { threshold: 0.2 });
-
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.12 });
   document.querySelectorAll('.water-card').forEach(card => observer.observe(card));
+
+  // Today's pick score bars animate on load
+  setTimeout(() => {
+    document.querySelectorAll('#todays-pick .score-pill-fill').forEach(el => {
+      el.style.transform = 'scaleX(1)';
+      el.style.transition = 'transform 1s cubic-bezier(0.25,1,0.5,1) 0.3s';
+    });
+  }, 300);
 </script>
 </body>
 </html>
