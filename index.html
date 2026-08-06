@@ -560,7 +560,7 @@
 
     .water-card:nth-child(even) .card-visual {
       border-right: 0;
-      border-left: 1px solid rgba(200, 216, 232, 0.07);
+      border-left: 1px solid rgba(200, 216, 232, 0.07)
     }
 
     .card-visual .product-visual { min-height: 430px; width: 100%; }
@@ -906,18 +906,6 @@
   <script>
     "use strict";
 
-    /*
-      IMAGE SETUP
-      1. Create an "images" folder beside this HTML file.
-      2. Add each bottle photo using the filename listed in the data below.
-      3. WebP is recommended, but you can change any path to .png, .jpg or a full URL.
-      4. Missing images automatically show a styled bottle fallback instead of an emoji.
-
-      Unicode safety:
-      This source intentionally avoids emoji subdivision flags and Unicode bidirectional
-      controls. Country codes such as GB-ENG, GB-SCT and GB-WLS are plain visible text.
-    */
-
     const waters = [
       { name: "Voss", nation: "Norway", code: "NO", taste: 10, sparkle: 6, aesthetics: 8.5, image: "voss.JPG" },
       { name: "San Pellegrino", nation: "Italy", code: "IT", taste: 9, sparkle: 7, aesthetics: 8, image: "sanpellegrino.JPG" },
@@ -925,9 +913,9 @@
       { name: "Highland Spring", nation: "Scotland", code: "GB-SCT", taste: 9, sparkle: 7.5, aesthetics: 6, image: "highlandspring.JPG" },
       { name: "Solan de Cabras", nation: "Spain", code: "ES", taste: 8, sparkle: 6.5, aesthetics: 8, image: "solandecabras.JPG" },
       { name: "Asahi Wilkinson", nation: "Japan", code: "JP", taste: 8, sparkle: 9, aesthetics: 5, image: "asahiwilkinson.JPG" },
-      { name: "Icelandic Glacial", nation: "Iceland", code: "IS", taste: 8, sparkle: 6, aesthetics: 8, image: "icelandicglacial.JPG" },
-      { name: "Sarajevski Kiseljak", nation: "Bosnia and Herzegovina", code: "BA", taste: 7.5, sparkle: 7, aesthetics: 7, image: "sarajevskiKiseljak.JPG" },
-      { name: "Kingsdown", nation: "England", code: "GB-ENG", taste: 8, sparkle: 6.5, aesthetics: 7, image: "images/kingsdown.JPG" },
+      { name: "Icelandic Glacial", nation: "Iceland", code: "IS", taste: 8, sparkle: 6, aesthetics: 8, image: "icelandicglacier.JPG" },
+      { name: "Sarajevski Kiseljak", nation: "Bosnia and Herzegovina", code: "BA", taste: 7.5, sparkle: 7, aesthetics: 7, image: "sarajevskikiseljak.JPG" },
+      { name: "Kingsdown", nation: "England", code: "GB-ENG", taste: 8, sparkle: 6.5, aesthetics: 7, image: "kingsdown.JPG" },
       { name: "M&S Scottish Sparkling", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 7.5, aesthetics: 5, image: "msscottish.JPG" },
       { name: "Jamnica", nation: "Croatia", code: "HR", taste: 7, sparkle: 6.5, aesthetics: 7, image: "jamnica.JPG" },
       { name: "Borjomi", nation: "Georgia", code: "GE", taste: 5, sparkle: 7, aesthetics: 8, image: "borjomi.JPG" },
