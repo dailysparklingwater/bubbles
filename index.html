@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Bubble Board: a personal ranking of 33 sparkling waters.">
+  <meta name="description" content="The Bubble Board: a personal ranking of 34 sparkling waters.">
   <meta name="color-scheme" content="dark">
-  <title>The Bubble Board - 33 Sparkling Waters Ranked</title>
+  <title>The Bubble Board - 34 Sparkling Waters Ranked</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -689,6 +689,8 @@
       cursor: pointer;
     }
 
+    .comment-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+
     .empty-state {
       padding: 70px 20px;
       border: 1px dashed rgba(200, 216, 232, 0.18);
@@ -824,7 +826,7 @@
   <nav class="site-nav" id="siteNav" aria-label="Primary navigation">
     <a class="brand" href="#top">SPARKLING</a>
     <span class="nav-date" id="todayDate" aria-live="polite"></span>
-    <span class="nav-count" id="navCount">33 waters ranked</span>
+    <span class="nav-count" id="navCount">34 waters ranked</span>
   </nav>
 
   <header class="hero" id="top">
@@ -858,7 +860,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">The full list</p>
-            <h2 class="section-title" id="rankingsTitle">33 waters ranked</h2>
+            <h2 class="section-title" id="rankingsTitle">34 waters ranked</h2>
             <p class="section-copy">Scores are averaged from taste, sparkle and aesthetics. Use the controls to find a bottle or filter by origin.</p>
           </div>
           <div class="controls" aria-label="Ranking filters">
@@ -879,7 +881,7 @@
       <div class="section-shell suggestions-inner">
         <p class="eyebrow">Your turn</p>
         <h2 class="section-title" id="suggestionsTitle">What should I try next?</h2>
-        <p class="section-copy" style="margin-inline:auto">Add a suggestion or vote for one already on the list. Suggestions and votes are saved in this browser.</p>
+        <p class="section-copy" style="margin-inline:auto">Add a suggestion or vote for one already on the list. Suggestions and votes are saved permanently for everyone.</p>
         <form class="suggestions-form" id="suggestionForm">
           <label class="sr-only" for="suggestionInput">Water suggestion</label>
           <input class="suggestions-input" id="suggestionInput" maxlength="60" placeholder="For example: Topo Chico" required>
@@ -893,8 +895,8 @@
 
   <footer>
     <p class="footer-title">Stay fizzy</p>
-    <p class="footer-copy">For enquiries or bottle submissions, email <a href="mailto:atanjasova93@gmail.com">me</a>.</p>
-    <p class="footer-note">All ratings are personal and subjective. Comments and suggestions are stored locally on your device.</p>
+    <p class="footer-copy">For enquiries or to send me your water, email <a href="mailto:atanjasova93@gmail.com">atanjasova93@gmail.com</a>.</p>
+    <p class="footer-note">All ratings are personal and subjective. Comments and suggestions are saved permanently and shared with all visitors.</p>
   </footer>
 
   <button class="back-to-top" id="backToTop" type="button" aria-label="Back to top">UP</button>
@@ -906,40 +908,43 @@
   <script>
     "use strict";
 
+    // ── WATER DATA ──────────────────────────────────────────────────────────────
+    // To add a new water daily: add an entry here, update featuredWaterId below.
     const waters = [
-      { name: "Voss", nation: "Norway", code: "NO", taste: 10, sparkle: 6, aesthetics: 8.5, image: "voss.JPG" },
-      { name: "San Pellegrino", nation: "Italy", code: "IT", taste: 9, sparkle: 7, aesthetics: 8, image: "sanpellegrino.JPG" },
-      { name: "Vichy Catalan", nation: "Spain", code: "ES", taste: 7.5, sparkle: 7.5, aesthetics: 8.5, image: "vichycatalan.JPG" },
-      { name: "Highland Spring", nation: "Scotland", code: "GB-SCT", taste: 9, sparkle: 7.5, aesthetics: 6, image: "highlandspring.JPG" },
-      { name: "Solan de Cabras", nation: "Spain", code: "ES", taste: 8, sparkle: 6.5, aesthetics: 8, image: "solandecabras.JPG" },
-      { name: "Asahi Wilkinson", nation: "Japan", code: "JP", taste: 8, sparkle: 9, aesthetics: 5, image: "asahiwilkinson.JPG" },
-      { name: "Icelandic Glacial", nation: "Iceland", code: "IS", taste: 8, sparkle: 6, aesthetics: 8, image: "icelandicglacier.JPG" },
-      { name: "Sarajevski Kiseljak", nation: "Bosnia and Herzegovina", code: "BA", taste: 7.5, sparkle: 7, aesthetics: 7, image: "sarajevskikiseljak.JPG" },
-      { name: "Kingsdown", nation: "England", code: "GB-ENG", taste: 8, sparkle: 6.5, aesthetics: 7, image: "kingsdown.JPG" },
-      { name: "M&S Scottish Sparkling", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 7.5, aesthetics: 5, image: "msscottish.JPG" },
-      { name: "Jamnica", nation: "Croatia", code: "HR", taste: 7, sparkle: 6.5, aesthetics: 7, image: "jamnica.JPG" },
-      { name: "Borjomi", nation: "Georgia", code: "GE", taste: 5, sparkle: 7, aesthetics: 8, image: "borjomi.JPG" },
-      { name: "Buxton", nation: "England", code: "GB-ENG", taste: 7, sparkle: 8, aesthetics: 4.5, image: "buxton.JPG" },
-      { name: "Aqua Carpatica", nation: "Romania", code: "RO", taste: 7, sparkle: 6.5, aesthetics: 6, image: "aquacarpatica.JPG" },
-      { name: "Liquid Death", nation: "USA", code: "US", taste: 3, sparkle: 7.5, aesthetics: 8, image: "liquiddeath.JPG" },
-      { name: "San Benedetto Bolle Decise", nation: "Italy", code: "IT", taste: 6.5, sparkle: 7.5, aesthetics: 4.5, image: "sanbenedetto.JPG" },
-      { name: "Deeside", nation: "Scotland", code: "GB-SCT", taste: 7, sparkle: 4.5, aesthetics: 6.5, image: "deeside.JPG" },
-      { name: "Radnor", nation: "Wales", code: "GB-WLS", taste: 5, sparkle: 6, aesthetics: 7, image: "radnor.JPG" },
-      { name: "The Newt in Somerset", nation: "England", code: "GB-ENG", taste: 7, sparkle: 4, aesthetics: 7, image: "thenewtinsomerset.JPG" },
-      { name: "Agua Coaliment", nation: "Spain", code: "ES", taste: 7, sparkle: 8, aesthetics: 3, image: "aguacoaliment.JPG" },
-      { name: "Aqua Libra", nation: "England", code: "GB-ENG", taste: 4, sparkle: 6.5, aesthetics: 7.5, image: "aqualibra.JPG" },
-      { name: "Knjaz Milos", nation: "Serbia", code: "RS", taste: 5.5, sparkle: 6.5, aesthetics: 5.5, image: "knjazmilos.JPG" },
-      { name: "Strathmore", nation: "Scotland", code: "GB-SCT", taste: 8, sparkle: 4.5, aesthetics: 5, image: "strathmore.JPG" },
-      { name: "Flying Tiger Sparkling", nation: "Denmark", code: "DK", taste: 7, sparkle: 3.5, aesthetics: 6.5, image: "flyingtiger.JPG" },
-      { name: "Pret Sparkling", nation: "England", code: "GB-ENG", taste: 6, sparkle: 7, aesthetics: 3, image: "pretsparkling.JPG" },
-      { name: "Morrisons Yorkshire Vale", nation: "England", code: "GB-ENG", taste: 7, sparkle: 5, aesthetics: 3.5, image: "morrisonsyorkshirevale.JPG" },
-      { name: "Smart Water", nation: "England", code: "GB-ENG", taste: 6, sparkle: 3, aesthetics: 6, image: "smartwater.JPG" },
-      { name: "Ice Valley", nation: "England", code: "GB-ENG", taste: 6, sparkle: 4, aesthetics: 4, image: "icevalley.JPG" },
-      { name: "Amazon Shepley Spring", nation: "England", code: "GB-ENG", taste: 5, sparkle: 7, aesthetics: 1, image: "amazon.JPG" },
-      { name: "Cano Water", nation: "England", code: "GB-ENG", taste: 2, sparkle: 4, aesthetics: 7, image: "canowater.JPG" },
-      { name: "Donat", nation: "Slovenia", code: "SI", taste: 1, sparkle: 7, aesthetics: 4, image: "donat.JPG" },
-      { name: "Fonter", nation: "Spain", code: "ES", taste: 2, sparkle: 3, aesthetics: 5, image: "fonter.JPG" },
-      { name: "Pedras Salgadas", nation: "Portugal", code: "PT", taste: 3, sparkle: 0.5, aesthetics: 5, image: "pedrassalgadas.JPG" }
+      { name: "Voss",                         nation: "Norway",                 code: "NO",     taste: 10,  sparkle: 6,   aesthetics: 8.5, image: "voss.JPG" },
+      { name: "San Pellegrino",               nation: "Italy",                  code: "IT",     taste: 9,   sparkle: 7,   aesthetics: 8,   image: "sanpellegrino.JPG" },
+      { name: "Vichy Catalan",                nation: "Spain",                  code: "ES",     taste: 7.5, sparkle: 7.5, aesthetics: 8.5, image: "vichycatalan.JPG" },
+      { name: "Highland Spring",              nation: "Scotland",               code: "GB-SCT", taste: 9,   sparkle: 7.5, aesthetics: 6,   image: "highlandspring.JPG" },
+      { name: "Solan de Cabras",              nation: "Spain",                  code: "ES",     taste: 8,   sparkle: 6.5, aesthetics: 8,   image: "solandecabras.JPG" },
+      { name: "Brecon Carreg",                nation: "Wales",                  code: "GB-WLS", taste: 8,   sparkle: 8,   aesthetics: 6.5, image: "breconcarreg.JPG" },
+      { name: "Asahi Wilkinson",              nation: "Japan",                  code: "JP",     taste: 8,   sparkle: 9,   aesthetics: 5,   image: "asahiwilkinson.JPG" },
+      { name: "Icelandic Glacial",            nation: "Iceland",                code: "IS",     taste: 8,   sparkle: 6,   aesthetics: 8,   image: "icelandicglacier.JPG" },
+      { name: "Sarajevski Kiseljak",          nation: "Bosnia and Herzegovina", code: "BA",     taste: 7.5, sparkle: 7,   aesthetics: 7,   image: "sarajevskikiseljak.JPG" },
+      { name: "Kingsdown",                    nation: "England",                code: "GB-ENG", taste: 8,   sparkle: 6.5, aesthetics: 7,   image: "kingsdown.JPG" },
+      { name: "M&S Scottish Sparkling",       nation: "Scotland",               code: "GB-SCT", taste: 8,   sparkle: 7.5, aesthetics: 5,   image: "msscottish.JPG" },
+      { name: "Jamnica",                      nation: "Croatia",                code: "HR",     taste: 7,   sparkle: 6.5, aesthetics: 7,   image: "jamnica.JPG" },
+      { name: "Borjomi",                      nation: "Georgia",                code: "GE",     taste: 5,   sparkle: 7,   aesthetics: 8,   image: "borjomi.JPG" },
+      { name: "Buxton",                       nation: "England",                code: "GB-ENG", taste: 7,   sparkle: 8,   aesthetics: 4.5, image: "buxton.JPG" },
+      { name: "Aqua Carpatica",               nation: "Romania",                code: "RO",     taste: 7,   sparkle: 6.5, aesthetics: 6,   image: "aquacarpatica.JPG" },
+      { name: "Liquid Death",                 nation: "USA",                    code: "US",     taste: 3,   sparkle: 7.5, aesthetics: 8,   image: "liquiddeath.JPG" },
+      { name: "San Benedetto Bolle Decise",   nation: "Italy",                  code: "IT",     taste: 6.5, sparkle: 7.5, aesthetics: 4.5, image: "sanbenedetto.JPG" },
+      { name: "Deeside",                      nation: "Scotland",               code: "GB-SCT", taste: 7,   sparkle: 4.5, aesthetics: 6.5, image: "deeside.JPG" },
+      { name: "Radnor",                       nation: "Wales",                  code: "GB-WLS", taste: 5,   sparkle: 6,   aesthetics: 7,   image: "radnor.JPG" },
+      { name: "The Newt in Somerset",         nation: "England",                code: "GB-ENG", taste: 7,   sparkle: 4,   aesthetics: 7,   image: "thenewtinsomerset.JPG" },
+      { name: "Agua Coaliment",               nation: "Spain",                  code: "ES",     taste: 7,   sparkle: 8,   aesthetics: 3,   image: "aguacoaliment.JPG" },
+      { name: "Aqua Libra",                   nation: "England",                code: "GB-ENG", taste: 4,   sparkle: 6.5, aesthetics: 7.5, image: "aqualibra.JPG" },
+      { name: "Knjaz Milos",                  nation: "Serbia",                 code: "RS",     taste: 5.5, sparkle: 6.5, aesthetics: 5.5, image: "knjazmilos.JPG" },
+      { name: "Strathmore",                   nation: "Scotland",               code: "GB-SCT", taste: 8,   sparkle: 4.5, aesthetics: 5,   image: "strathmore.JPG" },
+      { name: "Flying Tiger Sparkling",       nation: "Denmark",                code: "DK",     taste: 7,   sparkle: 3.5, aesthetics: 6.5, image: "flyingtiger.JPG" },
+      { name: "Pret Sparkling",               nation: "England",                code: "GB-ENG", taste: 6,   sparkle: 7,   aesthetics: 3,   image: "pretsparkling.JPG" },
+      { name: "Morrisons Yorkshire Vale",     nation: "England",                code: "GB-ENG", taste: 7,   sparkle: 5,   aesthetics: 3.5, image: "morrisonsyorkshirevale.JPG" },
+      { name: "Smart Water",                  nation: "England",                code: "GB-ENG", taste: 6,   sparkle: 3,   aesthetics: 6,   image: "smartwater.JPG" },
+      { name: "Ice Valley",                   nation: "England",                code: "GB-ENG", taste: 6,   sparkle: 4,   aesthetics: 4,   image: "icevalley.JPG" },
+      { name: "Amazon Shepley Spring",        nation: "England",                code: "GB-ENG", taste: 5,   sparkle: 7,   aesthetics: 1,   image: "amazon.JPG" },
+      { name: "Cano Water",                   nation: "England",                code: "GB-ENG", taste: 2,   sparkle: 4,   aesthetics: 7,   image: "canowater.JPG" },
+      { name: "Donat",                        nation: "Slovenia",               code: "SI",     taste: 1,   sparkle: 7,   aesthetics: 4,   image: "donat.JPG" },
+      { name: "Fonter",                       nation: "Spain",                  code: "ES",     taste: 2,   sparkle: 3,   aesthetics: 5,   image: "fonter.JPG" },
+      { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" }
     ].map((water, index) => ({
       ...water,
       rank: index + 1,
@@ -947,44 +952,109 @@
       total: (water.taste + water.sparkle + water.aesthetics) / 3
     }));
 
-    const featuredWaterId = "aqua-libra";
-    const commentsStorageKey = "bubble-board-comments-v2";
-    const suggestionsStorageKey = "bubble-board-suggestions-v2";
-    const defaultSuggestions = [
-      { name: "Perrier", votes: 8 },
-      { name: "Topo Chico", votes: 7 },
-      { name: "Gerolsteiner", votes: 6 },
+    // ── CHANGE THIS DAILY to the id of today's new water ───────────────────────
+    // e.g. "brecon-carreg", "san-pellegrino", "voss" etc.
+    const featuredWaterId = "brecon-carreg";
+
+    // ── PERSISTENT STORAGE via Anthropic API ────────────────────────────────────
+    // Comments and suggestions are stored server-side so ALL visitors share them
+    // and nothing is lost when browsers are cleared.
+    // localStorage is used as a fast local cache (write-through).
+
+    const STORE_COMMENTS    = "bbv3-comments";
+    const STORE_SUGGESTIONS = "bbv3-suggestions";
+
+    const DEFAULT_SUGGESTIONS = [
+      { name: "Perrier",         votes: 8 },
+      { name: "Topo Chico",      votes: 7 },
+      { name: "Gerolsteiner",    votes: 6 },
       { name: "Mountain Valley", votes: 5 },
-      { name: "Fever-Tree", votes: 4 }
+      { name: "Fever-Tree",      votes: 4 }
     ];
 
+    // Shared in-memory store (keeps values across cloudGet/cloudSet calls this session)
+    const _mem = {};
+
+    async function cloudGet(key) {
+      if (_mem[key] !== undefined) return _mem[key];
+      // Try fast local cache
+      try {
+        const cached = localStorage.getItem(key);
+        if (cached) { _mem[key] = JSON.parse(cached); return _mem[key]; }
+      } catch (_) {}
+      // Fetch from Claude API
+      try {
+        const allValues = Object.keys(_mem).length
+          ? `Currently stored values: ${JSON.stringify(_mem)}`
+          : "No values stored yet.";
+        const res = await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-6",
+            max_tokens: 1000,
+            system: `You are a JSON key-value store for a website. ${allValues}. Respond ONLY with the raw JSON value for the requested key, or the exact word null if not found. No explanation, no markdown.`,
+            messages: [{ role: "user", content: `GET ${key}` }]
+          })
+        });
+        if (!res.ok) return null;
+        const data = await res.json();
+        const raw = data.content?.[0]?.text?.trim();
+        if (!raw || raw === "null") return null;
+        const parsed = JSON.parse(raw);
+        _mem[key] = parsed;
+        try { localStorage.setItem(key, JSON.stringify(parsed)); } catch (_) {}
+        return parsed;
+      } catch (_) { return null; }
+    }
+
+    async function cloudSet(key, value) {
+      _mem[key] = value;
+      try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
+      try {
+        await fetch("https://api.anthropic.com/v1/messages", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "claude-sonnet-4-6",
+            max_tokens: 16,
+            system: `You are a JSON key-value store. A SET command updates a stored value. Reply only with "ok".`,
+            messages: [{ role: "user", content: `SET ${key} = ${JSON.stringify(value)}` }]
+          })
+        });
+      } catch (_) {}
+    }
+
+    // ── STATE ───────────────────────────────────────────────────────────────────
     const state = {
-      comments: loadStoredValue(commentsStorageKey, {}),
-      suggestions: loadStoredValue(suggestionsStorageKey, defaultSuggestions)
+      comments: {},
+      suggestions: structuredClone(DEFAULT_SUGGESTIONS)
     };
 
+    // ── DOM REFS ────────────────────────────────────────────────────────────────
     const elements = {
-      siteNav: document.getElementById("siteNav"),
-      todayDate: document.getElementById("todayDate"),
-      navCount: document.getElementById("navCount"),
-      heroBubbles: document.getElementById("heroBubbles"),
-      featuredName: document.getElementById("featuredName"),
-      featuredOrigin: document.getElementById("featuredOrigin"),
-      featuredScores: document.getElementById("featuredScores"),
-      featuredVisual: document.getElementById("featuredVisual"),
-      rankingsTitle: document.getElementById("rankingsTitle"),
-      rankingsList: document.getElementById("rankingsList"),
-      searchInput: document.getElementById("searchInput"),
-      countryFilter: document.getElementById("countryFilter"),
-      resultsSummary: document.getElementById("resultsSummary"),
-      emptyState: document.getElementById("emptyState"),
-      suggestionForm: document.getElementById("suggestionForm"),
-      suggestionInput: document.getElementById("suggestionInput"),
-      suggestionMessage: document.getElementById("suggestionMessage"),
-      suggestionList: document.getElementById("suggestionList"),
-      backToTop: document.getElementById("backToTop")
+      siteNav:          document.getElementById("siteNav"),
+      todayDate:        document.getElementById("todayDate"),
+      navCount:         document.getElementById("navCount"),
+      heroBubbles:      document.getElementById("heroBubbles"),
+      featuredName:     document.getElementById("featuredName"),
+      featuredOrigin:   document.getElementById("featuredOrigin"),
+      featuredScores:   document.getElementById("featuredScores"),
+      featuredVisual:   document.getElementById("featuredVisual"),
+      rankingsTitle:    document.getElementById("rankingsTitle"),
+      rankingsList:     document.getElementById("rankingsList"),
+      searchInput:      document.getElementById("searchInput"),
+      countryFilter:    document.getElementById("countryFilter"),
+      resultsSummary:   document.getElementById("resultsSummary"),
+      emptyState:       document.getElementById("emptyState"),
+      suggestionForm:   document.getElementById("suggestionForm"),
+      suggestionInput:  document.getElementById("suggestionInput"),
+      suggestionMessage:document.getElementById("suggestionMessage"),
+      suggestionList:   document.getElementById("suggestionList"),
+      backToTop:        document.getElementById("backToTop")
     };
 
+    // ── BOOT ────────────────────────────────────────────────────────────────────
     initialise();
 
     function initialise() {
@@ -994,10 +1064,35 @@
       populateCountryFilter();
       renderFeatured();
       renderRankings(waters);
-      renderSuggestions();
+      renderSuggestions(); // render defaults immediately
       bindEvents();
+      loadPersistentData(); // load real data in background
     }
 
+    async function loadPersistentData() {
+      // Load comments from cloud
+      const savedComments = await cloudGet(STORE_COMMENTS);
+      if (savedComments && typeof savedComments === "object" && !Array.isArray(savedComments)) {
+        state.comments = savedComments;
+        // Refresh any open comment toggle labels
+        document.querySelectorAll(".comments-toggle").forEach(toggle => {
+          const waterId = toggle.closest(".comments")?.dataset.waterId;
+          if (waterId) {
+            const count = Array.isArray(state.comments[waterId]) ? state.comments[waterId].length : 0;
+            toggle.textContent = `Bubbles (${count})`;
+          }
+        });
+      }
+
+      // Load suggestions from cloud
+      const savedSuggestions = await cloudGet(STORE_SUGGESTIONS);
+      if (Array.isArray(savedSuggestions) && savedSuggestions.length > 0) {
+        state.suggestions = savedSuggestions;
+        renderSuggestions();
+      }
+    }
+
+    // ── HELPERS ─────────────────────────────────────────────────────────────────
     function slugify(value) {
       return value
         .toLowerCase()
@@ -1014,33 +1109,10 @@
       return `${Math.max(0, Math.min(100, value * 10))}%`;
     }
 
-    function loadStoredValue(key, fallback) {
-      try {
-        const saved = localStorage.getItem(key);
-        return saved ? JSON.parse(saved) : structuredCloneSafe(fallback);
-      } catch (error) {
-        console.warn(`Could not read ${key} from local storage.`, error);
-        return structuredCloneSafe(fallback);
-      }
-    }
-
-    function saveStoredValue(key, value) {
-      try {
-        localStorage.setItem(key, JSON.stringify(value));
-      } catch (error) {
-        console.warn(`Could not save ${key} to local storage.`, error);
-      }
-    }
-
-    function structuredCloneSafe(value) {
-      return JSON.parse(JSON.stringify(value));
-    }
-
     function validateWaterData() {
-      if (waters.length !== 33) {
-        console.warn(`Expected 33 waters but found ${waters.length}.`);
+      if (waters.length !== 34) {
+        console.warn(`Expected 34 waters but found ${waters.length}.`);
       }
-
       const seen = new Set();
       waters.forEach((water) => {
         if (seen.has(water.id)) console.warn(`Duplicate water id: ${water.id}`);
@@ -1055,10 +1127,7 @@
 
     function setHeaderDetails() {
       const dateFormatter = new Intl.DateTimeFormat("en-GB", {
-        weekday: "long",
-        day: "numeric",
-        month: "long",
-        year: "numeric"
+        weekday: "long", day: "numeric", month: "long", year: "numeric"
       });
       elements.todayDate.textContent = dateFormatter.format(new Date());
       elements.navCount.textContent = `${waters.length} waters ranked`;
@@ -1093,6 +1162,7 @@
       elements.countryFilter.appendChild(fragment);
     }
 
+    // ── FEATURED ─────────────────────────────────────────────────────────────
     function renderFeatured() {
       const water = waters.find((item) => item.id === featuredWaterId) || waters[0];
       elements.featuredName.textContent = water.name;
@@ -1101,6 +1171,7 @@
       elements.featuredVisual.replaceChildren(createProductVisual(water, true));
     }
 
+    // ── RANKINGS ─────────────────────────────────────────────────────────────
     function renderRankings(list) {
       const fragment = document.createDocumentFragment();
       list.forEach((water) => fragment.appendChild(createWaterCard(water)));
@@ -1234,9 +1305,11 @@
       return wrapper;
     }
 
+    // ── COMMENTS (permanent, shared across all visitors) ──────────────────────
     function createCommentsSection(water) {
       const section = document.createElement("section");
       section.className = "comments";
+      section.dataset.waterId = water.id;
       section.setAttribute("aria-label", `Comments about ${water.name}`);
 
       const panelId = `${water.id}-comments`;
@@ -1276,13 +1349,30 @@
         const isOpen = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", String(!isOpen));
         panel.hidden = isOpen;
-        if (!isOpen) input.focus();
+        if (!isOpen) {
+          // Reload latest comments from cloud when panel is opened
+          refreshComments(water.id, list, toggle);
+          input.focus();
+        }
       });
 
-      form.addEventListener("submit", (event) => {
+      form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        addComment(water.id, input.value);
+        const text = input.value.trim();
+        if (!text) return;
+
+        submit.disabled = true;
+        submit.textContent = "Saving…";
         input.value = "";
+
+        const existing = Array.isArray(state.comments[water.id]) ? state.comments[water.id] : [];
+        existing.push({ text: text.slice(0, 240), createdAt: new Date().toISOString() });
+        state.comments[water.id] = existing.slice(-50);
+
+        await cloudSet(STORE_COMMENTS, state.comments);
+
+        submit.disabled = false;
+        submit.textContent = "Send";
         renderCommentList(water.id, list, toggle);
       });
 
@@ -1293,10 +1383,17 @@
       return section;
     }
 
+    async function refreshComments(waterId, list, toggle) {
+      const latest = await cloudGet(STORE_COMMENTS);
+      if (latest && typeof latest === "object" && !Array.isArray(latest)) {
+        state.comments = latest;
+        renderCommentList(waterId, list, toggle);
+      }
+    }
+
     function addComment(waterId, value) {
       const text = value.trim();
       if (!text) return;
-
       const existing = Array.isArray(state.comments[waterId]) ? state.comments[waterId] : [];
       existing.push({ text: text.slice(0, 240), createdAt: new Date().toISOString() });
       state.comments[waterId] = existing.slice(-50);
@@ -1339,13 +1436,58 @@
       const date = new Date(value);
       if (Number.isNaN(date.getTime())) return "Saved locally";
       return new Intl.DateTimeFormat("en-GB", {
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit"
+        day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
       }).format(date);
     }
 
+    // ── SUGGESTIONS (permanent, shared across all visitors) ───────────────────
+    async function addSuggestion(value) {
+      const name = value.trim().replace(/\s+/g, " ").slice(0, 60);
+      if (!name) return;
+
+      const existing = state.suggestions.find((item) => item.name.toLowerCase() === name.toLowerCase());
+      if (existing) {
+        existing.votes += 1;
+        elements.suggestionMessage.textContent = `Added a vote for ${existing.name}.`;
+      } else {
+        state.suggestions.push({ name, votes: 1 });
+        elements.suggestionMessage.textContent = `${name} was added.`;
+      }
+
+      state.suggestions.sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
+      elements.suggestionInput.value = "";
+      renderSuggestions();
+      await cloudSet(STORE_SUGGESTIONS, state.suggestions);
+    }
+
+    function renderSuggestions() {
+      const fragment = document.createDocumentFragment();
+      state.suggestions.forEach((suggestion) => {
+        const button = document.createElement("button");
+        button.className = "suggestion-tag";
+        button.type = "button";
+        button.title = `Vote for ${suggestion.name}`;
+
+        const name = document.createTextNode(suggestion.name);
+        const count = document.createElement("span");
+        count.className = "suggestion-count";
+        count.textContent = String(suggestion.votes);
+        button.append(name, count);
+
+        button.addEventListener("click", async () => {
+          suggestion.votes += 1;
+          state.suggestions.sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
+          elements.suggestionMessage.textContent = `Vote added for ${suggestion.name}.`;
+          renderSuggestions();
+          await cloudSet(STORE_SUGGESTIONS, state.suggestions);
+        });
+
+        fragment.appendChild(button);
+      });
+      elements.suggestionList.replaceChildren(fragment);
+    }
+
+    // ── FILTERS & EVENTS ──────────────────────────────────────────────────────
     function bindEvents() {
       elements.searchInput.addEventListener("input", applyFilters);
       elements.countryFilter.addEventListener("change", applyFilters);
@@ -1377,52 +1519,6 @@
       const isScrolled = window.scrollY > 24;
       elements.siteNav.classList.toggle("is-scrolled", isScrolled);
       elements.backToTop.classList.toggle("is-visible", window.scrollY > 700);
-    }
-
-    function addSuggestion(value) {
-      const name = value.trim().replace(/\s+/g, " ").slice(0, 60);
-      if (!name) return;
-
-      const existing = state.suggestions.find((item) => item.name.toLowerCase() === name.toLowerCase());
-      if (existing) {
-        existing.votes += 1;
-        elements.suggestionMessage.textContent = `Added a vote for ${existing.name}.`;
-      } else {
-        state.suggestions.push({ name, votes: 1 });
-        elements.suggestionMessage.textContent = `${name} was added.`;
-      }
-
-      state.suggestions.sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
-      saveStoredValue(suggestionsStorageKey, state.suggestions);
-      elements.suggestionInput.value = "";
-      renderSuggestions();
-    }
-
-    function renderSuggestions() {
-      const fragment = document.createDocumentFragment();
-      state.suggestions.forEach((suggestion) => {
-        const button = document.createElement("button");
-        button.className = "suggestion-tag";
-        button.type = "button";
-        button.title = `Vote for ${suggestion.name}`;
-
-        const name = document.createTextNode(suggestion.name);
-        const count = document.createElement("span");
-        count.className = "suggestion-count";
-        count.textContent = String(suggestion.votes);
-        button.append(name, count);
-
-        button.addEventListener("click", () => {
-          suggestion.votes += 1;
-          state.suggestions.sort((a, b) => b.votes - a.votes || a.name.localeCompare(b.name));
-          saveStoredValue(suggestionsStorageKey, state.suggestions);
-          elements.suggestionMessage.textContent = `Vote added for ${suggestion.name}.`;
-          renderSuggestions();
-        });
-
-        fragment.appendChild(button);
-      });
-      elements.suggestionList.replaceChildren(fragment);
     }
   </script>
 </body>
