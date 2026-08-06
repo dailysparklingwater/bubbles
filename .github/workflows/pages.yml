@@ -14,22 +14,20 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4  # Changed from v6 to v4
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload site
-        uses: actions/upload-pages-artifact@v4
+        uses: actions/upload-pages-artifact@v3 # Use v3 for better stability
         with:
-          path: '.'
+          path: '.' # This deploys everything in your root folder
 
       - name: Deploy to GitHub Pages
         id: deployment
