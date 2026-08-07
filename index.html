@@ -614,6 +614,11 @@
       cursor: pointer;
     }
     .comment-submit:disabled { opacity: 0.5; cursor: not-allowed; }
+    .comment-error {
+      margin: 8px 2px 0;
+      color: var(--danger);
+      font-size: 0.72rem;
+    }
     .empty-state {
       padding: 70px 20px;
       border: 1px dashed rgba(200, 216, 232, 0.18);
@@ -897,6 +902,77 @@
       } catch (_) {}
     }
 
+    // Comments use one Firebase child per comment. This prevents one visitor's
+    // comment from overwriting another visitor's comment. Comments are never
+    // treated as permanently saved in localStorage; Firebase is the source of truth.
+    async function getSharedComments() {
+      const res = await fetch(`${FB_URL}/${STORE_COMMENTS}.json`, { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error(`Firebase read failed (${res.status})`);
+      }
+      const data = await res.json();
+      return data && typeof data === "object" ? data : {};
+    }
+
+    async function addSharedComment(waterId, comment) {
+      const res = await fetch(`${FB_URL}/${STORE_COMMENTS}.json`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          waterId,
+          text: String(comment.text || "").slice(0, 240),
+          createdAt: comment.createdAt
+        })
+      });
+
+      if (!res.ok) {
+        let detail = "";
+        try { detail = await res.text(); } catch (_) {}
+        throw new Error(`Firebase save failed (${res.status})${detail ? `: ${detail}` : ""}`);
+      }
+
+      return res.json();
+    }
+
+    function normaliseSharedComments(data) {
+      const grouped = {};
+      if (!data || typeof data !== "object" || Array.isArray(data)) return grouped;
+
+      Object.entries(data).forEach(([key, value]) => {
+        // New format: { pushId: { waterId, text, createdAt } }
+        if (value && typeof value === "object" && !Array.isArray(value) && value.waterId) {
+          const waterId = String(value.waterId);
+          if (!Array.isArray(grouped[waterId])) grouped[waterId] = [];
+          grouped[waterId].push({
+            id: key,
+            text: String(value.text || "").slice(0, 240),
+            createdAt: value.createdAt || ""
+          });
+          return;
+        }
+
+        // Legacy format: { waterId: [ { text, createdAt }, ... ] }
+        if (Array.isArray(value)) {
+          grouped[key] = value.map((comment, index) => ({
+            id: `legacy-${key}-${index}`,
+            text: String(comment?.text || "").slice(0, 240),
+            createdAt: comment?.createdAt || ""
+          }));
+        }
+      });
+
+      Object.keys(grouped).forEach((waterId) => {
+        grouped[waterId].sort((a, b) => {
+          const aTime = Date.parse(a.createdAt) || 0;
+          const bTime = Date.parse(b.createdAt) || 0;
+          return aTime - bTime;
+        });
+        grouped[waterId] = grouped[waterId].slice(-50);
+      });
+
+      return grouped;
+    }
+
     const DEFAULT_SUGGESTIONS = [
       { name: "Perrier",         votes: 8 },
       { name: "Topo Chico",      votes: 7 },
@@ -954,18 +1030,26 @@
     }
 
     async function loadPersistentData() {
-      // Load comments
-      const savedComments = await storeGet(STORE_COMMENTS);
-      if (savedComments && typeof savedComments === "object" && !Array.isArray(savedComments)) {
-        state.comments = savedComments;
-        document.querySelectorAll(".comments-toggle").forEach(toggle => {
-          const waterId = toggle.closest(".comments")?.dataset.waterId;
-          if (waterId) {
-            const count = Array.isArray(state.comments[waterId]) ? state.comments[waterId].length : 0;
-            toggle.textContent = `Bubbles (${count})`;
-          }
+      // Load comments from Firebase. A failure is surfaced instead of silently
+      // falling back to this browser's localStorage.
+      try {
+        const savedComments = await getSharedComments();
+        state.comments = normaliseSharedComments(savedComments);
+        try { localStorage.setItem(STORE_COMMENTS, JSON.stringify(state.comments)); } catch (_) {}
+        document.querySelectorAll(".comments").forEach(section => {
+          const waterId = section.dataset.waterId;
+          const list = section.querySelector(".comment-list");
+          const toggle = section.querySelector(".comments-toggle");
+          if (waterId && list && toggle) renderCommentList(waterId, list, toggle);
+        });
+      } catch (error) {
+        console.error(error);
+        document.querySelectorAll(".comments").forEach(section => {
+          const status = section.querySelector(".comment-error");
+          if (status) status.textContent = "Comments could not be loaded. Check the Firebase database rules.";
         });
       }
+
       // Load suggestions
       const savedSuggestions = await storeGet(STORE_SUGGESTIONS);
       if (Array.isArray(savedSuggestions) && savedSuggestions.length > 0) {
@@ -1236,53 +1320,80 @@
       submit.type = "submit";
       submit.textContent = "Send";
 
-      toggle.addEventListener("click", () => {
+      const status = document.createElement("p");
+      status.className = "comment-error";
+      status.setAttribute("aria-live", "polite");
+
+      toggle.addEventListener("click", async () => {
         const isOpen = toggle.getAttribute("aria-expanded") === "true";
         toggle.setAttribute("aria-expanded", String(!isOpen));
         panel.hidden = isOpen;
         if (!isOpen) {
-          refreshComments(water.id, list, toggle);
+          status.textContent = "";
+          await refreshComments(water.id, list, toggle, status);
           input.focus();
         }
       });
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
-        const text = input.value.trim();
+        const text = input.value.trim().slice(0, 240);
         if (!text) return;
 
         submit.disabled = true;
         submit.textContent = "Saving…";
-        input.value = "";
+        status.textContent = "";
 
-        const existing = Array.isArray(state.comments[water.id]) ? state.comments[water.id] : [];
-        existing.push({ text: text.slice(0, 240), createdAt: new Date().toISOString() });
-        state.comments[water.id] = existing.slice(-50);
+        const comment = {
+          text,
+          createdAt: new Date().toISOString()
+        };
 
-        await storeSet(STORE_COMMENTS, state.comments);
+        try {
+          // POST creates a unique Firebase key, so multiple visitors can comment
+          // at the same time without overwriting one another.
+          const saved = await addSharedComment(water.id, comment);
+          const savedKey = saved?.name || `local-${Date.now()}`;
+          if (!Array.isArray(state.comments[water.id])) state.comments[water.id] = [];
+          state.comments[water.id].push({ ...comment, id: savedKey });
+          state.comments[water.id] = state.comments[water.id].slice(-50);
 
-        submit.disabled = false;
-        submit.textContent = "Send";
-        renderCommentList(water.id, list, toggle);
+          // Cache only the already-saved shared data for faster rendering later.
+          try { localStorage.setItem(STORE_COMMENTS, JSON.stringify(state.comments)); } catch (_) {}
+
+          input.value = "";
+          renderCommentList(water.id, list, toggle);
+        } catch (error) {
+          console.error(error);
+          status.textContent = "Could not save your comment. Please try again.";
+        } finally {
+          submit.disabled = false;
+          submit.textContent = "Send";
+        }
       });
 
       form.append(input, submit);
-      panel.append(list, form);
+      panel.append(list, form, status);
       section.append(toggle, panel);
       renderCommentList(water.id, list, toggle);
       return section;
     }
 
-    async function refreshComments(waterId, list, toggle) {
-      const latest = await storeGet(STORE_COMMENTS);
-      if (latest && typeof latest === "object" && !Array.isArray(latest)) {
-        state.comments = latest;
+    async function refreshComments(waterId, list, toggle, status) {
+      try {
+        const latest = await getSharedComments();
+        state.comments = normaliseSharedComments(latest);
+        try { localStorage.setItem(STORE_COMMENTS, JSON.stringify(state.comments)); } catch (_) {}
         renderCommentList(waterId, list, toggle);
+        if (status) status.textContent = "";
+      } catch (error) {
+        console.error(error);
+        if (status) status.textContent = "Comments could not be loaded. Check the Firebase database rules.";
       }
     }
 
     function renderCommentList(waterId, list, toggle) {
-      const comments = Array.isArray(state.comments[waterId]) ? state.comments[waterId] : [];
+      const comments = Array.isArray(state.comments[waterId]) ? state.comments[waterId].slice(-50) : [];
       toggle.textContent = `Bubbles (${comments.length})`;
 
       if (comments.length === 0) {
@@ -1303,7 +1414,7 @@
 
         const time = document.createElement("time");
         time.className = "comment-time";
-        time.dateTime = comment.createdAt;
+        time.dateTime = comment.createdAt || "";
         time.textContent = formatCommentDate(comment.createdAt);
 
         item.append(text, time);
@@ -1315,7 +1426,7 @@
 
     function formatCommentDate(value) {
       const date = new Date(value);
-      if (Number.isNaN(date.getTime())) return "Saved locally";
+      if (Number.isNaN(date.getTime())) return "Date unavailable";
       return new Intl.DateTimeFormat("en-GB", {
         day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"
       }).format(date);
