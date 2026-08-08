@@ -4,9 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Bubble Board: a personal ranking of 35 sparkling waters.">
+  <meta name="description" content="The Bubble Board: a personal ranking of 36 sparkling waters.">
   <meta name="color-scheme" content="dark">
-  <title>The Bubble Board - 35 Sparkling Waters Ranked</title>
+  <title>The Bubble Board - 36 Sparkling Waters Ranked</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -740,7 +740,7 @@
   <nav class="site-nav" id="siteNav" aria-label="Primary navigation">
     <a class="brand" href="#top">SPARKLING</a>
     <span class="nav-date" id="todayDate" aria-live="polite"></span>
-    <span class="nav-count" id="navCount">35 waters ranked</span>
+    <span class="nav-count" id="navCount">36 waters ranked</span>
   </nav>
   <header class="hero" id="top">
     <div class="bubbles" id="heroBubbles" aria-hidden="true"></div>
@@ -771,7 +771,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">The full list</p>
-            <h2 class="section-title" id="rankingsTitle">35 waters ranked</h2>
+            <h2 class="section-title" id="rankingsTitle">36 waters ranked</h2>
             <p class="section-copy">Scores are averaged from taste, sparkle and aesthetics. Use the controls to find a bottle or filter by origin.</p>
           </div>
           <div class="controls" aria-label="Ranking filters">
@@ -850,7 +850,8 @@
       { name: "Cano Water",                   nation: "England",                code: "GB-ENG", taste: 2,   sparkle: 4,   aesthetics: 7,   image: "canowater.JPG" },
       { name: "Donat",                        nation: "Slovenia",               code: "SI",     taste: 1,   sparkle: 7,   aesthetics: 4,   image: "donat.JPG" },
       { name: "Fonter",                       nation: "Spain",                  code: "ES",     taste: 2,   sparkle: 3,   aesthetics: 5,   image: "fonter.JPG" },
-      { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" }
+      { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" },
+      { name: "Sar\u0131k\u0131z",            nation: "T\u00FCrkiye",           code: "TR",     taste: 8,   sparkle: 9,   aesthetics: 6,   image: "sarikiz.JPG" }
     ].map((water, index) => ({
       ...water,
       rank: index + 1,
@@ -859,7 +860,7 @@
     }));
 
     // ── CHANGE THIS DAILY to the id of today's new water ───────────────────────
-    const featuredWaterId = "marlish";
+    const featuredWaterId = "sarikiz";
 
     // ── PERSISTENT STORAGE ──────────────────────────────────────────────────────
     // Uses Firebase Realtime Database as a true shared backend — data persists
@@ -1088,8 +1089,8 @@
     }
 
     function validateWaterData() {
-      if (waters.length !== 35) {
-        console.warn(`Expected 35 waters but found ${waters.length}.`);
+      if (waters.length !== 36) {
+        console.warn(`Expected 36 waters but found ${waters.length}.`);
       }
       const seen = new Set();
       waters.forEach((water) => {
