@@ -4,9 +4,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Bubble Board: a personal ranking of 36 sparkling waters.">
+  <meta name="description" content="The Bubble Board: a personal ranking of 35 sparkling waters.">
   <meta name="color-scheme" content="dark">
-  <title>The Bubble Board - 36 Sparkling Waters Ranked</title>
+  <title>The Bubble Board - 35 Sparkling Waters Ranked</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -820,6 +820,7 @@
       { name: "Marlish",                       nation: "England",                code: "GB-ENG", taste: 8.5, sparkle: 7,   aesthetics: 8.5, image: "marlish.JPG" },
       { name: "San Pellegrino",               nation: "Italy",                  code: "IT",     taste: 9,   sparkle: 7,   aesthetics: 8,   image: "sanpellegrino.JPG" },
       { name: "Vichy Catalan",                nation: "Spain",                  code: "ES",     taste: 7.5, sparkle: 7.5, aesthetics: 8.5, image: "vichycatalan.JPG" },
+      { name: "Sarıkız",                       nation: "Türkiye",                code: "TR",     taste: 8,   sparkle: 9,   aesthetics: 6,   image: "sarikiz.JPG" },
       { name: "Highland Spring",              nation: "Scotland",               code: "GB-SCT", taste: 9,   sparkle: 7.5, aesthetics: 6,   image: "highlandspring.JPG" },
       { name: "Solan de Cabras",              nation: "Spain",                  code: "ES",     taste: 8,   sparkle: 6.5, aesthetics: 8,   image: "solandecabras.JPG" },
       { name: "Brecon Carreg",                nation: "Wales",                  code: "GB-WLS", taste: 8,   sparkle: 8,   aesthetics: 6.5, image: "breconcarreg.JPG" },
@@ -850,8 +851,7 @@
       { name: "Cano Water",                   nation: "England",                code: "GB-ENG", taste: 2,   sparkle: 4,   aesthetics: 7,   image: "canowater.JPG" },
       { name: "Donat",                        nation: "Slovenia",               code: "SI",     taste: 1,   sparkle: 7,   aesthetics: 4,   image: "donat.JPG" },
       { name: "Fonter",                       nation: "Spain",                  code: "ES",     taste: 2,   sparkle: 3,   aesthetics: 5,   image: "fonter.JPG" },
-      { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" },
-      { name: "Sar\u0131k\u0131z",            nation: "T\u00FCrkiye",           code: "TR",     taste: 8,   sparkle: 9,   aesthetics: 6,   image: "sarikiz.JPG" }
+      { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" }
     ].map((water, index) => ({
       ...water,
       rank: index + 1,
@@ -860,7 +860,7 @@
     }));
 
     // ── CHANGE THIS DAILY to the id of today's new water ───────────────────────
-    const featuredWaterId = "sarikiz";
+    const featuredWaterId = "marlish";
 
     // ── PERSISTENT STORAGE ──────────────────────────────────────────────────────
     // Uses Firebase Realtime Database as a true shared backend — data persists
