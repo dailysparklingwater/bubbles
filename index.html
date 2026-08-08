@@ -852,12 +852,17 @@
       { name: "Donat",                        nation: "Slovenia",               code: "SI",     taste: 1,   sparkle: 7,   aesthetics: 4,   image: "donat.JPG" },
       { name: "Fonter",                       nation: "Spain",                  code: "ES",     taste: 2,   sparkle: 3,   aesthetics: 5,   image: "fonter.JPG" },
       { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" }
-    ].map((water, index) => ({
-      ...water,
-      rank: index + 1,
-      id: slugify(water.name),
-      total: (water.taste + water.sparkle + water.aesthetics) / 3
-    }));
+    ].map((water, index) => {
+      // Use the manual ID if it exists, otherwise generate one from the name
+      const finalId = water.id || slugify(water.name);
+      
+      return {
+        ...water,
+        rank: index + 1,
+        id: finalId,
+        total: (water.taste + water.sparkle + water.aesthetics) / 3
+      };
+    });
 
     // ── CHANGE THIS DAILY to the id of today's new water ───────────────────────
     const featuredWaterId = "Sarikiz";
