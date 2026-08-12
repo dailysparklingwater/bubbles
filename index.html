@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-  
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -498,7 +497,7 @@
     }
     .water-card:nth-child(even) .card-visual {
       border-right: 0;
-      border-left: 1px solid rgba(200, 216, 232, 0.07)
+      border-left: 1px solid rgba(200, 216, 232, 0.07);
     }
     .card-visual .product-visual { min-height: 430px; width: 100%; }
     .rank-chip {
@@ -740,7 +739,7 @@
   <nav class="site-nav" id="siteNav" aria-label="Primary navigation">
     <a class="brand" href="#top">SPARKLING</a>
     <span class="nav-date" id="todayDate" aria-live="polite"></span>
-    <span class="nav-count" id="navCount">36 waters ranked</span>
+    <span class="nav-count" id="navCount">39 waters ranked</span>
   </nav>
   <header class="hero" id="top">
     <div class="bubbles" id="heroBubbles" aria-hidden="true"></div>
@@ -771,7 +770,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">The full list</p>
-            <h2 class="section-title" id="rankingsTitle">36 waters ranked</h2>
+            <h2 class="section-title" id="rankingsTitle">39 waters ranked</h2>
             <p class="section-copy">Scores are averaged from taste, sparkle and aesthetics. Use the controls to find a bottle or filter by origin.</p>
           </div>
           <div class="controls" aria-label="Ranking filters">
@@ -814,7 +813,6 @@
     "use strict";
 
     // ── WATER DATA ──────────────────────────────────────────────────────────────
-    // To add a new water daily: add an entry here, update featuredWaterId below.
     const waters = [
       { name: "Voss",                         nation: "Norway",                 code: "NO",     taste: 10,  sparkle: 6,   aesthetics: 8.5, image: "voss.JPG" },
       { name: "Marlish",                      nation: "England",                code: "GB-ENG", taste: 8.5, sparkle: 7,   aesthetics: 8.5, image: "marlish.JPG" },
@@ -855,30 +853,19 @@
       { name: "Muszynianka",                  nation: "Poland",                 code: "PL",     taste: 8,   sparkle: 2,   aesthetics: 2,   image: "muszynianka.JPG" },
       { name: "Fonter",                       nation: "Spain",                  code: "ES",     taste: 2,   sparkle: 3,   aesthetics: 5,   image: "fonter.JPG" },
       { name: "Pedras Salgadas",              nation: "Portugal",               code: "PT",     taste: 3,   sparkle: 0.5, aesthetics: 5,   image: "pedrassalgadas.JPG" }
-    ].map((water, index) => {
-      // Use the manual ID if it exists, otherwise generate one from the name
-      const finalId = water.id || slugify(water.name);
-      
-      return {
-        ...water,
-        rank: index + 1,
-        id: finalId,
-        total: (water.taste + water.sparkle + water.aesthetics) / 3
-      };
-    });
+    ].map((water, index) => ({
+      ...water,
+      rank: index + 1,
+      id: slugify(water.name),
+      total: (water.taste + water.sparkle + water.aesthetics) / 3
+    }));
 
     // ── CHANGE THIS DAILY to the id of today's new water ───────────────────────
     const featuredWaterId = "muszynianka";
 
     // ── PERSISTENT STORAGE ──────────────────────────────────────────────────────
-    // Uses Firebase Realtime Database as a true shared backend — data persists
-    // across all sessions and is visible to every visitor.
-    // Falls back to localStorage if the network is unavailable.
-
     const STORE_COMMENTS    = "bb-comments-v1";
     const STORE_SUGGESTIONS = "bb-suggestions-v1";
-
-    // Firebase config — free Spark plan, no credit card needed
     const FB_URL = "https://bubble-board-d148e-default-rtdb.europe-west1.firebasedatabase.app";
 
     async function storeGet(key) {
@@ -891,7 +878,6 @@
           return data;
         }
       } catch (_) {}
-      // Fallback to localStorage
       try {
         const raw = localStorage.getItem(key);
         return raw ? JSON.parse(raw) : null;
@@ -899,9 +885,7 @@
     }
 
     async function storeSet(key, value) {
-      // Optimistically update localStorage immediately
       try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
-      // Persist to Firebase
       try {
         await fetch(`${FB_URL}/${key}.json`, {
           method: "PUT",
@@ -911,14 +895,9 @@
       } catch (_) {}
     }
 
-    // Comments use one Firebase child per comment. This prevents one visitor's
-    // comment from overwriting another visitor's comment. Comments are never
-    // treated as permanently saved in localStorage; Firebase is the source of truth.
     async function getSharedComments() {
       const res = await fetch(`${FB_URL}/${STORE_COMMENTS}.json`, { cache: "no-store" });
-      if (!res.ok) {
-        throw new Error(`Firebase read failed (${res.status})`);
-      }
+      if (!res.ok) throw new Error(`Firebase read failed (${res.status})`);
       const data = await res.json();
       return data && typeof data === "object" ? data : {};
     }
@@ -933,22 +912,18 @@
           createdAt: comment.createdAt
         })
       });
-
       if (!res.ok) {
         let detail = "";
         try { detail = await res.text(); } catch (_) {}
         throw new Error(`Firebase save failed (${res.status})${detail ? `: ${detail}` : ""}`);
       }
-
       return res.json();
     }
 
     function normaliseSharedComments(data) {
       const grouped = {};
       if (!data || typeof data !== "object" || Array.isArray(data)) return grouped;
-
       Object.entries(data).forEach(([key, value]) => {
-        // New format: { pushId: { waterId, text, createdAt } }
         if (value && typeof value === "object" && !Array.isArray(value) && value.waterId) {
           const waterId = String(value.waterId);
           if (!Array.isArray(grouped[waterId])) grouped[waterId] = [];
@@ -959,8 +934,6 @@
           });
           return;
         }
-
-        // Legacy format: { waterId: [ { text, createdAt }, ... ] }
         if (Array.isArray(value)) {
           grouped[key] = value.map((comment, index) => ({
             id: `legacy-${key}-${index}`,
@@ -969,16 +942,10 @@
           }));
         }
       });
-
       Object.keys(grouped).forEach((waterId) => {
-        grouped[waterId].sort((a, b) => {
-          const aTime = Date.parse(a.createdAt) || 0;
-          const bTime = Date.parse(b.createdAt) || 0;
-          return aTime - bTime;
-        });
+        grouped[waterId].sort((a, b) => (Date.parse(a.createdAt) || 0) - (Date.parse(b.createdAt) || 0));
         grouped[waterId] = grouped[waterId].slice(-50);
       });
-
       return grouped;
     }
 
@@ -990,44 +957,36 @@
       { name: "Fever-Tree",      votes: 4 }
     ];
 
-    const commentsStorageKey = STORE_COMMENTS;
-    const suggestionsStorageKey = STORE_SUGGESTIONS;
-
     const state = {
-      comments: loadStoredValue(commentsStorageKey, {}),
-      suggestions: loadStoredValue(suggestionsStorageKey, defaultSuggestions())
+      comments: loadStoredValue(STORE_COMMENTS, {}),
+      suggestions: loadStoredValue(STORE_SUGGESTIONS, JSON.parse(JSON.stringify(DEFAULT_SUGGESTIONS)))
     };
 
-    function defaultSuggestions() {
-      return JSON.parse(JSON.stringify(DEFAULT_SUGGESTIONS));
-    }
-
     const elements = {
-      siteNav:          document.getElementById("siteNav"),
-      todayDate:        document.getElementById("todayDate"),
-      navCount:         document.getElementById("navCount"),
-      heroBubbles:      document.getElementById("heroBubbles"),
-      featuredName:     document.getElementById("featuredName"),
-      featuredOrigin:   document.getElementById("featuredOrigin"),
-      featuredScores:   document.getElementById("featuredScores"),
-      featuredVisual:   document.getElementById("featuredVisual"),
-      rankingsTitle:    document.getElementById("rankingsTitle"),
-      rankingsList:     document.getElementById("rankingsList"),
-      searchInput:      document.getElementById("searchInput"),
-      countryFilter:    document.getElementById("countryFilter"),
-      resultsSummary:   document.getElementById("resultsSummary"),
-      emptyState:       document.getElementById("emptyState"),
-      suggestionForm:   document.getElementById("suggestionForm"),
-      suggestionInput:  document.getElementById("suggestionInput"),
-      suggestionMessage:document.getElementById("suggestionMessage"),
-      suggestionList:   document.getElementById("suggestionList"),
-      backToTop:        document.getElementById("backToTop")
+      siteNav:           document.getElementById("siteNav"),
+      todayDate:         document.getElementById("todayDate"),
+      navCount:          document.getElementById("navCount"),
+      heroBubbles:       document.getElementById("heroBubbles"),
+      featuredName:      document.getElementById("featuredName"),
+      featuredOrigin:    document.getElementById("featuredOrigin"),
+      featuredScores:    document.getElementById("featuredScores"),
+      featuredVisual:    document.getElementById("featuredVisual"),
+      rankingsTitle:     document.getElementById("rankingsTitle"),
+      rankingsList:      document.getElementById("rankingsList"),
+      searchInput:       document.getElementById("searchInput"),
+      countryFilter:     document.getElementById("countryFilter"),
+      resultsSummary:    document.getElementById("resultsSummary"),
+      emptyState:        document.getElementById("emptyState"),
+      suggestionForm:    document.getElementById("suggestionForm"),
+      suggestionInput:   document.getElementById("suggestionInput"),
+      suggestionMessage: document.getElementById("suggestionMessage"),
+      suggestionList:    document.getElementById("suggestionList"),
+      backToTop:         document.getElementById("backToTop")
     };
 
     initialise();
 
     function initialise() {
-      validateWaterData();
       setHeaderDetails();
       createHeroBubbles();
       populateCountryFilter();
@@ -1039,8 +998,6 @@
     }
 
     async function loadPersistentData() {
-      // Load comments from Firebase. A failure is surfaced instead of silently
-      // falling back to this browser's localStorage.
       try {
         const savedComments = await getSharedComments();
         state.comments = normaliseSharedComments(savedComments);
@@ -1053,13 +1010,11 @@
         });
       } catch (error) {
         console.error(error);
-        document.querySelectorAll(".comments").forEach(section => {
-          const status = section.querySelector(".comment-error");
-          if (status) status.textContent = "Comments could not be loaded. Check the Firebase database rules.";
+        document.querySelectorAll(".comment-error").forEach(el => {
+          el.textContent = "Comments could not be loaded.";
         });
       }
 
-      // Load suggestions
       const savedSuggestions = await storeGet(STORE_SUGGESTIONS);
       if (Array.isArray(savedSuggestions) && savedSuggestions.length > 0) {
         state.suggestions = savedSuggestions;
@@ -1068,11 +1023,7 @@
     }
 
     function slugify(value) {
-      return value
-        .toLowerCase()
-        .replace(/&/g, " and ")
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "");
+      return value.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
     }
 
     function formatScore(value) {
@@ -1087,60 +1038,35 @@
       try {
         const saved = localStorage.getItem(key);
         return saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(fallback));
-      } catch (error) {
+      } catch (_) {
         return JSON.parse(JSON.stringify(fallback));
       }
     }
 
-    function saveStoredValue(key, value) {
-      try { localStorage.setItem(key, JSON.stringify(value)); } catch (_) {}
-    }
-
-    function validateWaterData() {
-      if (!waters.length) {
-        console.warn("No water data found.");
-      }
-      const seen = new Set();
-      waters.forEach((water) => {
-        if (seen.has(water.id)) console.warn(`Duplicate water id: ${water.id}`);
-        seen.add(water.id);
-        ["taste", "sparkle", "aesthetics"].forEach((field) => {
-          if (water[field] < 0 || water[field] > 10) {
-            console.warn(`${water.name}: ${field} must be between 0 and 10.`);
-          }
-        });
-      });
-    }
-
     function setHeaderDetails() {
-      const dateFormatter = new Intl.DateTimeFormat("en-GB", {
+      elements.todayDate.textContent = new Intl.DateTimeFormat("en-GB", {
         weekday: "long", day: "numeric", month: "long", year: "numeric"
-      });
-      elements.todayDate.textContent = dateFormatter.format(new Date());
+      }).format(new Date());
       elements.navCount.textContent = `${waters.length} waters ranked`;
       elements.rankingsTitle.textContent = `${waters.length} waters ranked`;
     }
 
     function createHeroBubbles() {
       const fragment = document.createDocumentFragment();
-      for (let index = 0; index < 22; index += 1) {
+      for (let i = 0; i < 22; i++) {
         const bubble = document.createElement("span");
         const size = Math.round(Math.random() * 62 + 10);
         bubble.className = "bubble";
-        bubble.style.width = `${size}px`;
-        bubble.style.height = `${size}px`;
-        bubble.style.left = `${Math.random() * 100}%`;
-        bubble.style.animationDuration = `${Math.random() * 11 + 9}s`;
-        bubble.style.animationDelay = `${Math.random() * -16}s`;
+        bubble.style.cssText = `width:${size}px;height:${size}px;left:${Math.random() * 100}%;animation-duration:${Math.random() * 11 + 9}s;animation-delay:${Math.random() * -16}s`;
         fragment.appendChild(bubble);
       }
       elements.heroBubbles.replaceChildren(fragment);
     }
 
     function populateCountryFilter() {
-      const origins = [...new Set(waters.map((water) => water.nation))].sort((a, b) => a.localeCompare(b));
+      const origins = [...new Set(waters.map(w => w.nation))].sort((a, b) => a.localeCompare(b));
       const fragment = document.createDocumentFragment();
-      origins.forEach((origin) => {
+      origins.forEach(origin => {
         const option = document.createElement("option");
         option.value = origin;
         option.textContent = origin;
@@ -1150,7 +1076,7 @@
     }
 
     function renderFeatured() {
-      const water = waters.find((item) => item.id === featuredWaterId) || waters[0];
+      const water = waters.find(w => w.id === featuredWaterId) || waters[0];
       elements.featuredName.textContent = water.name;
       elements.featuredOrigin.replaceChildren(createCountryBadge(water), document.createTextNode(water.nation));
       elements.featuredScores.replaceChildren(...createScores(water));
@@ -1159,7 +1085,7 @@
 
     function renderRankings(list) {
       const fragment = document.createDocumentFragment();
-      list.forEach((water) => fragment.appendChild(createWaterCard(water)));
+      list.forEach(water => fragment.appendChild(createWaterCard(water)));
       elements.rankingsList.replaceChildren(fragment);
       elements.emptyState.hidden = list.length !== 0;
       elements.resultsSummary.textContent = list.length === waters.length
@@ -1229,13 +1155,13 @@
       const wrapper = document.createElement("div");
       wrapper.className = isTotal ? "score score-total" : "score";
 
-      const labelElement = document.createElement("span");
-      labelElement.className = "score-label";
-      labelElement.textContent = label;
+      const labelEl = document.createElement("span");
+      labelEl.className = "score-label";
+      labelEl.textContent = label;
 
-      const valueElement = document.createElement("span");
-      valueElement.className = "score-value";
-      valueElement.textContent = formatScore(value);
+      const valueEl = document.createElement("span");
+      valueEl.className = "score-value";
+      valueEl.textContent = formatScore(value);
 
       const meter = document.createElement("div");
       meter.className = "meter";
@@ -1245,10 +1171,14 @@
       fill.className = "meter-fill";
       fill.style.setProperty("--score-width", percentage(value));
       meter.appendChild(fill);
-      wrapper.append(labelElement, valueElement, meter);
+      wrapper.append(labelEl, valueEl, meter);
       return wrapper;
     }
 
+    // ── IMAGE LOADER ─────────────────────────────────────────────────────────────
+    // Simple and reliable: use a plain relative path (water.image).
+    // All JPG files sit in the same folder as index.html on GitHub Pages,
+    // so no URL construction or path tricks are needed.
     function createProductVisual(water, eager) {
       const wrapper = document.createElement("div");
       wrapper.className = "product-visual";
@@ -1257,6 +1187,7 @@
       fallback.className = "bottle-fallback";
       fallback.setAttribute("role", "img");
       fallback.setAttribute("aria-label", `${water.name} bottle image placeholder`);
+      fallback.hidden = true;
 
       const label = document.createElement("span");
       label.className = "fallback-label";
@@ -1272,95 +1203,23 @@
       image.alt = `${water.name} bottle`;
       image.loading = eager ? "eager" : "lazy";
       image.decoding = "async";
-      image.hidden = true;
       if (eager) image.fetchPriority = "high";
+      image.hidden = true;
 
-      /*
-       * GitHub Pages image loader
-       *
-       * The water data intentionally keeps the EXISTING GitHub filenames
-       * (for example marlish.JPG, muszynianka.JPG and one.JPG).
-       *
-       * We first try that exact filename. If it fails, we try sensible
-       * case/extension variants. This is useful when older files were
-       * uploaded with different capitalisation.
-       *
-       * document.baseURI makes the path work whether the site is served
-       * from a custom domain or from a GitHub Pages repository path.
-       */
-      const original = String(water.image || "").trim();
-      const variants = [];
+      image.onload = function () {
+        image.hidden = false;
+        fallback.hidden = true;
+      };
 
-      function addVariant(value) {
-        if (!value || variants.includes(value)) return;
-        variants.push(value);
-      }
-
-      addVariant(original);
-
-      const dot = original.lastIndexOf(".");
-      if (dot > -1) {
-        const stem = original.slice(0, dot);
-        const ext = original.slice(dot).toLowerCase();
-
-        addVariant(`${stem}${ext}`);
-        addVariant(`${stem}${ext.toUpperCase()}`);
-
-        // Try filename casing variants without changing the spelling.
-        addVariant(`${stem.toLowerCase()}${ext}`);
-        addVariant(`${stem.toLowerCase()}${ext.toUpperCase()}`);
-        addVariant(`${stem.toUpperCase()}${ext}`);
-        addVariant(`${stem.toUpperCase()}${ext.toUpperCase()}`);
-
-        // Also tolerate JPG/JPEG differences.
-        if (ext === ".jpg" || ext === ".jpeg") {
-          const otherExt = ext === ".jpg" ? ".jpeg" : ".jpg";
-          addVariant(`${stem}${otherExt}`);
-          addVariant(`${stem}${otherExt.toUpperCase()}`);
-          addVariant(`${stem.toLowerCase()}${otherExt}`);
-          addVariant(`${stem.toLowerCase()}${otherExt.toUpperCase()}`);
-        }
-      }
-
-      let attempt = 0;
-
-      function showFallback() {
+      image.onerror = function () {
         image.hidden = true;
         fallback.hidden = false;
-        console.warn(
-          `[Bubble Board] Could not load image for "${water.name}". ` +
-          `Tried: ${variants.join(", ")}`
-        );
-      }
+      };
 
-      function tryNextImage() {
-        if (attempt >= variants.length) {
-          showFallback();
-          return;
-        }
+      // Plain relative path — works in every browser on GitHub Pages
+      image.src = water.image;
 
-        const filename = variants[attempt++];
-        const url = new URL(filename, document.baseURI).href;
-
-        // Remove handlers before changing src so one failure is handled once.
-        image.onload = () => {
-          image.hidden = false;
-          fallback.hidden = true;
-        };
-
-        image.onerror = () => {
-          tryNextImage();
-        };
-
-        image.src = url;
-      }
-
-      fallback.hidden = false;
       wrapper.append(fallback, image);
-
-      // Start only after the element is in the DOM.
-      tryNextImage();
-
       return wrapper;
     }
 
@@ -1427,23 +1286,15 @@
         submit.textContent = "Saving…";
         status.textContent = "";
 
-        const comment = {
-          text,
-          createdAt: new Date().toISOString()
-        };
+        const comment = { text, createdAt: new Date().toISOString() };
 
         try {
-          // POST creates a unique Firebase key, so multiple visitors can comment
-          // at the same time without overwriting one another.
           const saved = await addSharedComment(water.id, comment);
           const savedKey = saved?.name || `local-${Date.now()}`;
           if (!Array.isArray(state.comments[water.id])) state.comments[water.id] = [];
           state.comments[water.id].push({ ...comment, id: savedKey });
           state.comments[water.id] = state.comments[water.id].slice(-50);
-
-          // Cache only the already-saved shared data for faster rendering later.
           try { localStorage.setItem(STORE_COMMENTS, JSON.stringify(state.comments)); } catch (_) {}
-
           input.value = "";
           renderCommentList(water.id, list, toggle);
         } catch (error) {
@@ -1471,7 +1322,7 @@
         if (status) status.textContent = "";
       } catch (error) {
         console.error(error);
-        if (status) status.textContent = "Comments could not be loaded. Check the Firebase database rules.";
+        if (status) status.textContent = "Comments could not be loaded.";
       }
     }
 
@@ -1488,7 +1339,7 @@
       }
 
       const fragment = document.createDocumentFragment();
-      comments.forEach((comment) => {
+      comments.forEach(comment => {
         const item = document.createElement("article");
         item.className = "comment-item";
 
@@ -1519,7 +1370,7 @@
       const name = value.trim().replace(/\s+/g, " ").slice(0, 60);
       if (!name) return;
 
-      const existing = state.suggestions.find((item) => item.name.toLowerCase() === name.toLowerCase());
+      const existing = state.suggestions.find(item => item.name.toLowerCase() === name.toLowerCase());
       if (existing) {
         existing.votes += 1;
         elements.suggestionMessage.textContent = `Added a vote for ${existing.name}.`;
@@ -1536,7 +1387,7 @@
 
     function renderSuggestions() {
       const fragment = document.createDocumentFragment();
-      state.suggestions.forEach((suggestion) => {
+      state.suggestions.forEach(suggestion => {
         const button = document.createElement("button");
         button.className = "suggestion-tag";
         button.type = "button";
@@ -1564,23 +1415,19 @@
     function bindEvents() {
       elements.searchInput.addEventListener("input", applyFilters);
       elements.countryFilter.addEventListener("change", applyFilters);
-
-      elements.suggestionForm.addEventListener("submit", (event) => {
+      elements.suggestionForm.addEventListener("submit", event => {
         event.preventDefault();
         addSuggestion(elements.suggestionInput.value);
       });
-
       window.addEventListener("scroll", handleScroll, { passive: true });
-      elements.backToTop.addEventListener("click", () => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-      });
+      elements.backToTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
       handleScroll();
     }
 
     function applyFilters() {
       const query = elements.searchInput.value.trim().toLowerCase();
       const nation = elements.countryFilter.value;
-      const filtered = waters.filter((water) => {
+      const filtered = waters.filter(water => {
         const matchesText = !query || `${water.name} ${water.nation}`.toLowerCase().includes(query);
         const matchesNation = !nation || water.nation === nation;
         return matchesText && matchesNation;
@@ -1589,8 +1436,7 @@
     }
 
     function handleScroll() {
-      const isScrolled = window.scrollY > 24;
-      elements.siteNav.classList.toggle("is-scrolled", isScrolled);
+      elements.siteNav.classList.toggle("is-scrolled", window.scrollY > 24);
       elements.backToTop.classList.toggle("is-visible", window.scrollY > 700);
     }
   </script>
