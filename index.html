@@ -1217,7 +1217,8 @@
       };
 
       // Absolute path required because the site is served from /bubbles/ on GitHub Pages
-      image.src = "https://raw.githubusercontent.com/dailysparklingwater/bubbles/master/" + water.image;
+      //image.src = "https://raw.githubusercontent.com/dailysparklingwater/bubbles/master/" + water.image;
+      image.src = "./" + water.image;
 
       wrapper.append(fallback, image);
       return wrapper;
