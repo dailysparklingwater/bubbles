@@ -1439,6 +1439,39 @@
       elements.siteNav.classList.toggle("is-scrolled", window.scrollY > 24);
       elements.backToTop.classList.toggle("is-visible", window.scrollY > 700);
     }
+    function createProductVisual(water, eager) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "product-visual";
+
+  const image = document.createElement("img");
+  image.className = "bottle-image";
+  image.alt = `${water.name} bottle`;
+  
+  // Try the simplest path possible
+  image.src = water.image; 
+
+  image.onload = function() {
+    console.log("Successfully loaded: " + water.image);
+    image.hidden = false;
+  };
+
+  image.onerror = function() {
+    // THIS PART IS KEY: It tells you why it's failing
+    console.error("FAILED TO LOAD IMAGE. Tried looking at: " + image.src);
+    
+    image.hidden = true;
+    const fallback = wrapper.querySelector('.bottle-fallback');
+    if(fallback) fallback.hidden = false;
+  };
+
+  const fallback = document.createElement("div");
+  fallback.className = "bottle-fallback";
+  fallback.innerHTML = `<span class="fallback-label">${water.name}</span><span class="fallback-note">Not Found</span>`;
+  fallback.hidden = true;
+
+  wrapper.append(fallback, image);
+  return wrapper;
+}
   </script>
 </body>
 </html>
