@@ -1267,26 +1267,36 @@ function createProductVisual(water, eager) {
 
   const note = document.createElement("span");
   note.className = "fallback-note";
-  note.textContent = "Add bottle image";
+  note.textContent = "Loading...";
   fallback.append(label, note);
 
-  const image = document.createElement("img");
+  const image = new Image(); // Use new Image() for better Chrome decoding
   image.className = "bottle-image";
   image.alt = `${water.name} bottle`;
-  image.src = "./" + water.image + "?v=2"; 
-  image.loading = eager ? "eager" : "lazy";
-  image.decoding = "async";
-  image.hidden = true;
+  
+  // Chrome fix: Use opacity instead of 'hidden'. 
+  // If Chrome sees hidden=true, it often refuses to fire the 'load' event for large files.
+  image.style.opacity = "0";
 
-  image.addEventListener("load", () => {
-    image.hidden = false;
-    fallback.hidden = true;
-  }, { once: true });
+  const showImage = () => {
+    image.style.opacity = "1";
+    fallback.style.display = "none";
+  };
 
-  image.addEventListener("error", () => {
+  image.onload = showImage;
+  image.onerror = () => {
     image.remove();
-    fallback.hidden = false;
-  }, { once: true });
+    fallback.style.display = "grid";
+    note.textContent = "Bottle Image";
+  };
+
+  // Set the source. Added a version (?v=) to force Chrome to bypass broken cache.
+  image.src = "./" + water.image + "?v=50"; 
+
+  // Chrome fix: If the image is already cached, 'onload' might not fire.
+  if (image.complete) {
+    showImage();
+  }
 
   wrapper.append(fallback, image);
   return wrapper;
