@@ -1271,7 +1271,7 @@ function createProductVisual(water, eager) {
   const image = document.createElement("img");
   image.className = "bottle-image";
   image.alt = `${water.name} bottle`;
-  image.src = water.image;
+  image.src = "./" + water.image + "?v=2"; 
   image.loading = eager ? "eager" : "lazy";
   image.decoding = "async";
   image.hidden = true;
