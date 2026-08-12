@@ -1,3 +1,5 @@
+--- START OF FILE Paste August 12, 2026 - 9:18PM ---
+
 <!doctype html>
 
 <html lang="en">
@@ -456,6 +458,8 @@
       text-transform: uppercase;
     }
     .rankings-list { display: grid; gap: 18px; }
+
+    /* CHROME FIX: Removed content-visibility and contain-intrinsic-size */
     .water-card {
       position: relative;
       display: grid;
@@ -468,8 +472,6 @@
         linear-gradient(135deg, rgba(200, 216, 232, 0.045), transparent 46%),
         rgba(7, 11, 22, 0.56);
       box-shadow: 0 24px 70px rgba(0, 0, 0, 0.16);
-      content-visibility: auto;
-      contain-intrinsic-size: 680px;
     }
     .water-card:nth-child(even) .card-visual { order: 2; }
     .water-card:nth-child(even) .card-info { order: 1; }
@@ -741,7 +743,7 @@
   <nav class="site-nav" id="siteNav" aria-label="Primary navigation">
     <a class="brand" href="#top">SPARKLING</a>
     <span class="nav-date" id="todayDate" aria-live="polite"></span>
-    <span class="nav-count" id="navCount">36 waters ranked</span>
+    <span class="nav-count" id="navCount">39 waters ranked</span>
   </nav>
   <header class="hero" id="top">
     <div class="bubbles" id="heroBubbles" aria-hidden="true"></div>
@@ -772,7 +774,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">The full list</p>
-            <h2 class="section-title" id="rankingsTitle">36 waters ranked</h2>
+            <h2 class="section-title" id="rankingsTitle">39 waters ranked</h2>
             <p class="section-copy">Scores are averaged from taste, sparkle and aesthetics. Use the controls to find a bottle or filter by origin.</p>
           </div>
           <div class="controls" aria-label="Ranking filters">
@@ -1098,8 +1100,8 @@ function saveStoredValue(key, value) {
 }
 
 function validateWaterData() {
-  if (waters.length !== 36) {
-    console.warn(`Expected 36 waters but found ${waters.length}.`);
+  if (waters.length !== 39) {
+    console.warn(`Expected 39 waters but found ${waters.length}.`);
   }
   const seen = new Set();
   waters.forEach((water) => {
@@ -1275,7 +1277,6 @@ function createProductVisual(water, eager) {
   image.loading = eager ? "eager" : "lazy";
   image.decoding = "async";
   image.hidden = true;
-  if (eager) image.fetchPriority = "high";
 
   image.addEventListener("load", () => {
     image.hidden = false;
