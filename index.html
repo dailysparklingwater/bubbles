@@ -1097,8 +1097,8 @@
     }
 
     function validateWaterData() {
-      if (waters.length !== 36) {
-        console.warn(`Expected 36 waters but found ${waters.length}.`);
+      if (!waters.length) {
+        console.warn("No water data found.");
       }
       const seen = new Set();
       waters.forEach((water) => {
@@ -1264,29 +1264,103 @@
 
       const note = document.createElement("span");
       note.className = "fallback-note";
-      note.textContent = "Add bottle image";
+      note.textContent = "Image unavailable";
       fallback.append(label, note);
 
       const image = document.createElement("img");
       image.className = "bottle-image";
       image.alt = `${water.name} bottle`;
-      image.src = water.image;
       image.loading = eager ? "eager" : "lazy";
       image.decoding = "async";
       image.hidden = true;
       if (eager) image.fetchPriority = "high";
 
-      image.addEventListener("load", () => {
-        image.hidden = false;
-        fallback.hidden = true;
-      }, { once: true });
+      /*
+       * GitHub Pages image loader
+       *
+       * The water data intentionally keeps the EXISTING GitHub filenames
+       * (for example marlish.JPG, muszynianka.JPG and one.JPG).
+       *
+       * We first try that exact filename. If it fails, we try sensible
+       * case/extension variants. This is useful when older files were
+       * uploaded with different capitalisation.
+       *
+       * document.baseURI makes the path work whether the site is served
+       * from a custom domain or from a GitHub Pages repository path.
+       */
+      const original = String(water.image || "").trim();
+      const variants = [];
 
-      image.addEventListener("error", () => {
-        image.remove();
+      function addVariant(value) {
+        if (!value || variants.includes(value)) return;
+        variants.push(value);
+      }
+
+      addVariant(original);
+
+      const dot = original.lastIndexOf(".");
+      if (dot > -1) {
+        const stem = original.slice(0, dot);
+        const ext = original.slice(dot).toLowerCase();
+
+        addVariant(`${stem}${ext}`);
+        addVariant(`${stem}${ext.toUpperCase()}`);
+
+        // Try filename casing variants without changing the spelling.
+        addVariant(`${stem.toLowerCase()}${ext}`);
+        addVariant(`${stem.toLowerCase()}${ext.toUpperCase()}`);
+        addVariant(`${stem.toUpperCase()}${ext}`);
+        addVariant(`${stem.toUpperCase()}${ext.toUpperCase()}`);
+
+        // Also tolerate JPG/JPEG differences.
+        if (ext === ".jpg" || ext === ".jpeg") {
+          const otherExt = ext === ".jpg" ? ".jpeg" : ".jpg";
+          addVariant(`${stem}${otherExt}`);
+          addVariant(`${stem}${otherExt.toUpperCase()}`);
+          addVariant(`${stem.toLowerCase()}${otherExt}`);
+          addVariant(`${stem.toLowerCase()}${otherExt.toUpperCase()}`);
+        }
+      }
+
+      let attempt = 0;
+
+      function showFallback() {
+        image.hidden = true;
         fallback.hidden = false;
-      }, { once: true });
+        console.warn(
+          `[Bubble Board] Could not load image for "${water.name}". ` +
+          `Tried: ${variants.join(", ")}`
+        );
+      }
 
+      function tryNextImage() {
+        if (attempt >= variants.length) {
+          showFallback();
+          return;
+        }
+
+        const filename = variants[attempt++];
+        const url = new URL(filename, document.baseURI).href;
+
+        // Remove handlers before changing src so one failure is handled once.
+        image.onload = () => {
+          image.hidden = false;
+          fallback.hidden = true;
+        };
+
+        image.onerror = () => {
+          tryNextImage();
+        };
+
+        image.src = url;
+      }
+
+      fallback.hidden = false;
       wrapper.append(fallback, image);
+
+      // Start only after the element is in the DOM.
+      tryNextImage();
+
       return wrapper;
     }
 
