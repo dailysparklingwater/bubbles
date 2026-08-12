@@ -1217,8 +1217,8 @@
       };
 
       // Plain relative path — works in every browser on GitHub Pages
-      image.src = water.image;
-
+      image.src = "/bubbles/" + water.image;
+      
       wrapper.append(fallback, image);
       return wrapper;
     }
