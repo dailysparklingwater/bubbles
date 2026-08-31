@@ -5,9 +5,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="The Bubble Board: a personal ranking of 57 sparkling waters.">
+  <meta name="description" content="The Bubble Board: a personal ranking of 58 sparkling waters.">
   <meta name="color-scheme" content="dark">
-  <title>The Bubble Board - 57 Sparkling Waters Ranked</title>
+  <title>The Bubble Board - 58 Sparkling Waters Ranked</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -817,8 +817,9 @@
 // ── WATER DATA ──────────────────────────────────────────────────────────────
 // To add a new water daily: add an entry here, update featuredWaterId below.
 const waters = [
-  { name: "Haage",                        nation: "Estonia",                code: "EE",     taste: 8,  sparkle: 8,    aesthetics: 9,   image: "haage.jpg" },
+  { name: "Haage",                        nation: "Estonia",                code: "EE",     taste: 8,   sparkle: 8,   aesthetics: 9,   image: "haage.jpg" },
   { name: "Voss",                         nation: "Norway",                 code: "NO",     taste: 10,  sparkle: 6,   aesthetics: 8.5, image: "voss.jpg" },
+  { name: "Dorna",                        nation: "Romania",                code: "RO",     taste: 8,   sparkle: 9,   aesthetics: 7,   image: "dorna.jpg" },
   { name: "Marlish",                      nation: "England",                code: "GB-ENG", taste: 8.5, sparkle: 7,   aesthetics: 8.5, image: "marlish.jpg" },
   { name: "San Pellegrino",               nation: "Italy",                  code: "IT",     taste: 9,   sparkle: 7,   aesthetics: 8,   image: "sanpellegrino.jpg" },
   { name: "Vichy Catalan",                nation: "Spain",                  code: "ES",     taste: 7.5, sparkle: 7.5, aesthetics: 8.5, image: "vichycatalan.jpg" },
@@ -887,7 +888,7 @@ const waters = [
 });
 
 // ── CHANGE THIS DAILY to the id of today's new water ───────────────────────
-const featuredWaterId = "princes-gate";
+const featuredWaterId = "dorna";
 
 // ── PERSISTENT STORAGE ──────────────────────────────────────────────────────
 // Uses Firebase Realtime Database as a true shared backend — data persists
